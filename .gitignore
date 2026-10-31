@@ -10,3 +10,4 @@ fichiers/*
 
 # Divers
 .DS_Store
+*.whl
