@@ -1,0 +1,12 @@
+# Secrets
+.env
+
+# Données personnelles et sauvegardes
+backups/*
+!backups/.gitkeep
+fichiers/*
+!fichiers/.gitkeep
+*.pdf
+
+# Divers
+.DS_Store

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verifications:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: docker-compose.yml valide
+        run: |
+          cp .env.example .env
+          docker compose config -q
+
+      - name: Scripts shell sans erreur (shellcheck)
+        run: shellcheck scripts/*.sh
+
+      - name: Workflows n8n en JSON valide, sans pinData
+        run: |
+          shopt -s nullglob
+          for f in workflows/*.json; do
+            jq empty "$f"
+            if jq -e 'has("pinData") and (.pinData | length > 0)' "$f" >/dev/null; then
+              echo "$f contient des pinData : relance scripts/export-workflows.sh"; exit 1
+            fi
+          done
+
+      - name: Aucun secret dans le dépôt (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
