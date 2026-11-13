@@ -4,6 +4,8 @@ Un agent auto-hébergé qui automatise une recherche d'emploi : veille d'offres,
 
 > Projet personnel et d'apprentissage, en cours de construction (novembre 2026).
 
+**Apprendre à le construire :** la [formation pas à pas](FORMATION.md), en 21 chapitres et 4 annexes (serveur, Docker, n8n, conception d'agents, sécurité), avec un [glossaire de A à Z](formation/annexe-d-glossaire.md).
+
 ## Le principe
 
 **Claude réfléchit, n8n exécute, l'humain valide.**
@@ -49,6 +51,8 @@ docker compose up -d
 
 Ouvrir ensuite `https://<N8N_HOST>` et créer immédiatement le compte propriétaire.
 
+Pour essayer sur son ordinateur, sans serveur : `cp .env.local.example .env`, remplir, puis `docker compose up -d postgres n8n` et ouvrir `http://localhost:5678`. Détails dans l'[annexe A](formation/annexe-a-mode-local.md).
+
 ## Exploitation
 
 | Script | Rôle |
@@ -56,6 +60,8 @@ Ouvrir ensuite `https://<N8N_HOST>` et créer immédiatement le compte propriét
 | `scripts/backup.sh` | Sauvegarde Postgres et le dossier n8n dans `backups/`, garde 14 jours |
 | `scripts/restore.sh <fichier>` | Restaure la base depuis une sauvegarde |
 | `scripts/export-workflows.sh` | Exporte les workflows dans `workflows/`, sans données de test |
+
+Les prompts envoyés à Claude sont versionnés dans [`prompts/`](prompts/).
 
 À chaque push, la CI vérifie le `docker-compose.yml`, les scripts (shellcheck), les workflows JSON et l'absence de secrets (gitleaks).
 

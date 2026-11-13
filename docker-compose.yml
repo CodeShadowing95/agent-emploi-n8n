@@ -38,7 +38,7 @@ services:
       - EXECUTIONS_DATA_MAX_AGE=336
     volumes:
       - n8n_data:/home/node/.n8n
-      - ./fichiers:/files
+      - ./fichiers:/home/node/.n8n-files
 
   caddy:
     image: caddy:2

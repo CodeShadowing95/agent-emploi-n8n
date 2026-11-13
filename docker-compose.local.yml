@@ -1,0 +1,14 @@
+# Mode local : n8n sur http://localhost:5678, sans Caddy ni nom de domaine.
+# S'utilise en complément de docker-compose.yml. Avec le .env tiré de
+# .env.local.example (qui définit COMPOSE_FILE), il suffit de taper :
+#   docker compose up -d postgres n8n
+# (Caddy n'est pas lancé : on ne nomme que postgres et n8n.)
+services:
+  n8n:
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5678/}
+      - N8N_SECURE_COOKIE=false
