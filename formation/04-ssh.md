@@ -89,6 +89,14 @@ Si tu as déjà donné ta clé à l'hébergeur lors de la commande, saute cette 
 [PC] $ type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh root@TON_IP "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
 ```
 
+**Sur Windows, dans l'Invite de commandes (cmd)**, reconnaissable à son invite `C:\Users\…>` : `$env:USERPROFILE` n'y existe pas (erreur « La syntaxe du nom de fichier, de répertoire ou de volume est incorrecte »). Écris `%USERPROFILE%` à la place :
+
+```bat
+[PC] > type %USERPROFILE%\.ssh\id_ed25519.pub | ssh root@TON_IP "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+```
+
+Pour tout le reste de la formation, préfère PowerShell : touche Windows, tape « PowerShell », Entrée. Son invite commence par `PS C:\Users\…>`.
+
 Ce que fait cette ligne : elle lit ta clé publique (`type`), l'envoie (`|`) au serveur, qui crée le dossier `.ssh`, ajoute la clé à la fin du fichier `authorized_keys`, et règle les permissions pour que personne d'autre ne puisse le modifier.
 
 Teste : `ssh root@TON_IP` ne doit plus demander le mot de passe root, seulement ta phrase de passe de clé.
