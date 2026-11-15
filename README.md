@@ -61,7 +61,7 @@ Pour essayer sur son ordinateur, sans serveur : `cp .env.local.example .env`, re
 | `scripts/restore.sh <fichier>` | Restaure la base depuis une sauvegarde |
 | `scripts/export-workflows.sh` | Exporte les workflows dans `workflows/`, sans données de test |
 
-Les prompts envoyés à Claude sont versionnés dans [`prompts/`](prompts/).
+Les prompts envoyés à Claude sont versionnés dans [`prompts/`](prompts/). Les agents sont fournis prêts à importer dans [`workflows/`](workflows/), avec leur [guide d'import](workflows/README.md).
 
 À chaque push, la CI vérifie le `docker-compose.yml`, les scripts (shellcheck), les workflows JSON et l'absence de secrets (gitleaks).
 
