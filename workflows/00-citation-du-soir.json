@@ -1,0 +1,176 @@
+{
+  "updatedAt": "2026-11-17T09:21:09.398Z",
+  "createdAt": "2026-11-17T09:03:59.185Z",
+  "id": "VW04QVvIk4I9giUJ",
+  "name": "00 Citation du soir",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 20 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e93faac8-d5cd-4757-80d7-79eda2b71ae8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Nous sommes le {{ $now.setLocale('fr').toFormat('cccc d LLLL yyyy') }}, 20 h.\nDemain, c'est {{ $now.plus({ days: 1 }).setLocale('fr').toFormat('cccc d LLLL') }}.\n\nPatrick est développeur full stack (Java/Spring Boot, JavaScript/TypeScript, React),\nancien d'YNOV, suivi par une mentore NQT. Il cherche un CDI partout en France et à\nl'étranger (Europe, Canada).\n\nÉcris-lui, en français, sans emoji :\n1. « Bonne pratique du jour » : un titre court, puis deux phrases sur pourquoi elle\n   marche. Choisis un thème différent chaque soir parmi : réseau et prise de contact,\n   LinkedIn (profil, posts, commentaires), candidature ciblée, relances, préparation\n   d'entretien, marché étranger, organisation de la recherche, visibilité technique\n   (GitHub, projets).\n2. « À faire demain » : 2 ou 3 actions concrètes liées à cette pratique, chacune\n   faisable en moins de 30 minutes, avec un verbe d'action et un résultat vérifiable\n   (exemple : « Envoyer 2 messages LinkedIn à des développeurs de X, sans demander\n   d'emploi »).\nSi demain est samedi ou dimanche, propose des actions légères (veille, profil, lecture).\nPhrases directes, pas de généralités du type « restez motivé ». 12 lignes maximum.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Tu es le coach et expert pour la recherche d'emploi de Patrick. Tu es bref, concret, méthodique, pragmatique et honnête."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        288,
+        0
+      ],
+      "id": "7e98b278-2a6e-47fe-bd6b-01a93088153d",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-5",
+          "cachedResultName": "Claude Sonnet 5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        400,
+        160
+      ],
+      "id": "2f12e436-875f-42d6-a0d8-225d1394237a",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "PdCrZOBEXRdyek1w",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "TON_CHAT_ID",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        0
+      ],
+      "id": "ac63a988-086a-4aef-bc38-f2b02ddee2af",
+      "name": "Send a text message",
+      "webhookId": "ccc110bc-64e1-439a-8062-4cb588cb6d43",
+      "credentials": {
+        "telegramApi": {
+          "id": "pD03Q2wPQdOvmPFP",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "versionId": "ecf0b30a-8563-4f43-8698-efc58934ef61",
+  "activeVersionId": null,
+  "versionCounter": 34,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-17T09:03:59.185Z",
+      "createdAt": "2026-11-17T09:03:59.185Z",
+      "role": "workflow:owner",
+      "workflowId": "VW04QVvIk4I9giUJ",
+      "projectId": "zpG68AhxBc3phERY",
+      "project": {
+        "updatedAt": "2026-11-13T20:01:33.891Z",
+        "createdAt": "2026-11-13T19:31:13.101Z",
+        "id": "zpG68AhxBc3phERY",
+        "name": "Frank Namegni <patrick.namegni@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "e8d534a7-a9e1-4122-92e4-3e6b2692bf2a"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}
