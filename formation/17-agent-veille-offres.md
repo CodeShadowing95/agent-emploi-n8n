@@ -86,6 +86,8 @@ return $input.all().map(({ json: o }) => ({
 
 ### Nœud 4 · France Travail (HTTP Request)
 
+> **Accès sur demande.** Depuis 2026, l'API Offres d'emploi n'est plus en libre accès (chapitre 11, section 6). Tant que France Travail ne t'a pas donné l'accès, construis ce nœud comme ci-dessous, puis **désactive-le** (clic droit → **Deactivate**, ou touche **D**). Un nœud désactivé laisse passer les données sans rien faire : le nœud suivant ne reçoit aucune offre, le Merge continue avec LinkedIn seul. Le fichier `workflows/04-veille-offres.json` est livré ainsi.
+
 - **Method** : `GET`
 - **URL** : `https://api.francetravail.io/partenaire/offresdemploi/v2/offres/search`
 - **Authentication** : `Generic Credential Type` → `OAuth2 API` → ton identifiant `France Travail`
