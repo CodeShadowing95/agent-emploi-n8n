@@ -79,4 +79,4 @@ Les fichiers suivent les chapitres, avec quatre petites différences :
 
 ## Après une modification
 
-Quand tu modifies un agent dans n8n, exporte-le avec `./scripts/export-workflows.sh` (chapitre 21). Vérifie avec `git diff` qu'aucune valeur personnelle (identifiant de feuille, chat_id, téléphone) n'y figure avant de commiter.
+Quand tu modifies un agent dans n8n, exporte-le avec `./scripts/export-workflows.sh` (chapitre 12). Le script exporte **tous** les workflows et remplace tes valeurs personnelles par les repères listés dans `masques.local` (à créer une fois depuis `masques.local.example`). Vérifie avec `git diff` qu'aucune valeur personnelle (identifiant de feuille, chat_id, téléphone) n'y figure avant de commiter.

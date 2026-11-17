@@ -1,0 +1,6 @@
+# Copier en masques.local (cp masques.local.example masques.local), puis remplir.
+# masques.local n'est jamais commité. Une ligne par valeur personnelle : VRAIE_VALEUR=REPERE
+# export-workflows.sh remplace chaque vraie valeur par son repère dans workflows/*.json.
+123456789=TON_CHAT_ID
+1AbCdEfGhIjKlMnOpQrStUvWxYz0123456789=TON_ID_DE_FEUILLE
+06 12 34 56 78=TON_TELEPHONE

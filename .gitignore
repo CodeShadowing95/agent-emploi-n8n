@@ -1,5 +1,6 @@
 # Secrets
 .env
+masques.local
 
 # Données personnelles et sauvegardes
 backups/*
