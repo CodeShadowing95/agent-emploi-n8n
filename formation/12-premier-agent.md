@@ -117,6 +117,8 @@ La dernière commande répond `Hi CodeShadowing95/agent-emploi-n8n! You've succe
 ```bash
 [VPS] $ sudo apt install -y jq          # une seule fois
 [VPS] $ ./scripts/export-workflows.sh
+[VPS] $ sed -i 's/123456789/TON_CHAT_ID/g' workflows/*.json   # 123456789 = ton vrai chat_id
+[VPS] $ git diff
 [VPS] $ git checkout -b agent-00-bonjour
 [VPS] $ git add workflows/
 [VPS] $ git commit -m "feat: agent bonjour du matin"
@@ -124,6 +126,54 @@ La dernière commande répond `Hi CodeShadowing95/agent-emploi-n8n! You've succe
 ```
 
 GitHub affiche un lien pour ouvrir une *pull request* : ouvre-la, vérifie que la CI passe au vert, puis fusionne-la (chapitre 21 pour le détail). Enfin, sur le serveur : `git checkout main && git pull`.
+
+### Comprendre l'export (à relire avant chaque nouvel agent)
+
+**Rien ne se met à jour tout seul.** Ton workflow existe à deux endroits :
+
+| Où | Ce que c'est | Quand ça change |
+|---|---|---|
+| **n8n** (la base Postgres du serveur) | La version vivante : celle que tu modifies et qui tourne | À chaque **Save** dans l'éditeur |
+| **Le dépôt Git** (`workflows/`, puis GitHub) | Une photo, prise à un instant donné | Seulement quand **tu** lances l'export et le commit |
+
+Exécuter un workflow ne le modifie pas : il n'y a rien à exporter après une simple exécution. On exporte après une modification qu'on veut garder : un agent terminé, un prompt amélioré, un nœud corrigé. La photo sert à revenir en arrière si tu casses quelque chose, à reconstruire n8n ailleurs, et à montrer ton travail.
+
+**Les commandes, une par une :**
+
+| Commande | Ce qu'elle fait |
+|---|---|
+| `sudo apt install -y jq` | Installe `jq`, un petit outil qui lit et modifie du JSON. Le script en a besoin. Une seule fois par serveur. |
+| `./scripts/export-workflows.sh` | Prend la photo : copie tous tes workflows de n8n vers `workflows/` (détail plus bas). |
+| `sed -i 's/123456789/TON_CHAT_ID/g' workflows/*.json` | Remplace ton vrai chat_id par le repère `TON_CHAT_ID` dans les fichiers exportés. Le dépôt est public : tes valeurs personnelles n'y vont jamais. n8n, lui, garde ton vrai numéro. |
+| `git diff` | Montre ce qui a changé dans les fichiers. Vérifie qu'il ne reste aucune valeur à toi (chat_id, ID de feuille, téléphone, adresse mail). |
+| `git checkout -b agent-00-bonjour` | Crée une **branche**, une copie de travail à part, pour ne pas toucher `main` directement. Change le nom à chaque agent. |
+| `git add workflows/` | Met les fichiers de `workflows/` dans le prochain commit. |
+| `git commit -m "feat: agent bonjour du matin"` | Enregistre la photo dans l'historique local, avec un message qui dit ce qu'elle contient. |
+| `git push -u origin agent-00-bonjour` | Envoie la branche sur GitHub. `-u` retient le lien : les prochaines fois, `git push` suffit. |
+
+**Ce que fait `export-workflows.sh`, ligne par ligne :**
+
+| Ligne du script | En clair |
+|---|---|
+| `#!/usr/bin/env bash` | La première ligne, appelée *shebang* : elle dit au système « exécute ce fichier avec Bash ». C'est grâce à elle que `./scripts/export-workflows.sh` fonctionne sans écrire `bash` devant. |
+| `set -euo pipefail` | Mode prudent : le script s'arrête à la première erreur, au lieu de continuer avec un résultat faux. |
+| `cd "$(dirname "$0")/.."` | Se place à la racine du dépôt, d'où que tu lances le script. |
+| `command -v jq … \|\| { echo …; exit 1; }` | Vérifie que `jq` est installé ; sinon, affiche comment l'installer et s'arrête. |
+| `docker compose exec -T n8n sh -c '… n8n export:workflow --all --separate --output=/tmp/export/'` | Entre dans le conteneur n8n et lui demande d'exporter **tous** ses workflows, un fichier par workflow, dans un dossier temporaire du conteneur. |
+| `docker compose cp n8n:/tmp/export/. /tmp/n8n-export/` | Copie ces fichiers du conteneur vers le serveur. |
+| La boucle `for f in … ; do … done` | Pour chaque fichier : fabrique un nom propre à partir du nom du workflow (minuscules, sans accents ni espaces : « Bonjour du matin » devient `bonjour-du-matin.json`), retire les données de test épinglées (`pinData`, qui peuvent contenir de vrais mails), puis l'enregistre dans `workflows/`. |
+
+Les identifiants (clés d'API, jetons) ne sont **jamais** exportés : le fichier ne contient que leur nom et un numéro interne.
+
+**Pour un prochain agent, la recette :**
+
+1. Construire et tester le workflow dans n8n, puis **Save**.
+2. `./scripts/export-workflows.sh`
+3. Remplacer tes valeurs personnelles par les repères (`TON_CHAT_ID`, `TON_ID_DE_FEUILLE`, `TON_TELEPHONE`) avec `sed`, puis `git diff`.
+4. `git checkout -b agent-NN-nom`, `git add workflows/`, `git commit -m "feat: …"`, `git push -u origin agent-NN-nom`.
+5. Pull request sur GitHub, CI verte, fusion, puis `git checkout main && git pull` sur le serveur.
+
+Les autres scripts du dossier `scripts/` (`backup.sh`, `restore.sh`) sont expliqués au chapitre 19.
 
 ## Vérifie
 
