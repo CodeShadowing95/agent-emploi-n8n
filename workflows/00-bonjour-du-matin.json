@@ -1,0 +1,185 @@
+{
+  "updatedAt": "2026-11-17T07:08:22.670Z",
+  "createdAt": "2026-11-17T06:14:18.390Z",
+  "id": "rJKdfFjNijLIOWNi",
+  "name": "00 Bonjour du matin",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1-5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "dabb8cf8-f460-4e57-b586-fc58b655679b",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Nous sommes le {{ $now.setLocale('fr').toFormat('cccc d LLLL yyyy') }}.\nPatrick est développeur full stack (Java/Spring Boot, JavaScript/TypeScript, React)\net cherche un CDI partout en France et à l'étranger (Europe, Canada).\n\nÉcris-lui, en français, sans emoji :\n1. Trois phrases d'encouragement : la recherche est difficile mais le but est\n   atteignable, et elle demande un effort soutenu, au-dessus de la moyenne, chaque jour.\n2. « Astuce du jour » : UNE technique de recherche d'emploi, expliquée en deux ou\n   trois phrases, avec une action précise à faire aujourd'hui. Choisis-la parmi\n   ces pistes (ou une autre de même esprit), et change de piste chaque jour :\n   - contacter sur LinkedIn un développeur d'une entreprise visée pour échanger\n     sur son métier ou sa stack, sans demander d'emploi ;\n   - écrire à un ancien élève d'YNOV qui travaille dans une entreprise qui\n     l'intéresse (recherche LinkedIn : « YNOV » + nom de l'entreprise, onglet Personnes) ;\n   - commenter utilement un post d'un recruteur ou d'un CTO ;\n   - demander à son mentor NQT une mise en relation ;\n   - repérer une entreprise qui vient de lever des fonds ou d'ouvrir un bureau ;\n   - aller à un meetup tech, en ligne ou près de chez lui, et parler à deux personnes ;\n   - contacter un cabinet de recrutement spécialisé IT ;\n   - viser une entreprise à l'étranger qui recrute en télétravail ou sponsorise des visas ;\n   - publier un court post sur un projet (Merkod, l'agent n8n) pour se rendre visible ;\n   - relancer une candidature restée sans réponse avec un élément nouveau.\nLe lundi, privilégie l'organisation de la semaine. Le vendredi, privilégie les relances.\nTon chaleureux mais pas mielleux, phrases directes, et varie la formulation\nd'un jour à l'autre.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Tu es le coach et expert en recherche d'emploi. Tu guides Patrick afin qu'il trouve rapidement un emploi. Tu es bref, concret et honnête. "
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        224,
+        0
+      ],
+      "id": "62775a69-d1a7-4ec7-bdb3-47624df97bb3",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-5-5",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 5.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        160,
+        208
+      ],
+      "id": "0a526c46-3e3a-4e03-84b1-1a81f97120f5",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "PdCrZOBEXRdyek1w",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "9140994581",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        592,
+        0
+      ],
+      "id": "37ba5373-29fd-4911-aab0-053d8e127ffa",
+      "name": "Send a text message",
+      "webhookId": "174e4cb7-2daa-492b-bbe1-4b161be2379a",
+      "credentials": {
+        "telegramApi": {
+          "id": "pD03Q2wPQdOvmPFP",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "versionId": "139dc643-c7bd-4965-a307-fb0b4802a72e",
+  "activeVersionId": "139dc643-c7bd-4965-a307-fb0b4802a72e",
+  "versionCounter": 51,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-17T06:14:18.390Z",
+      "createdAt": "2026-11-17T06:14:18.390Z",
+      "role": "workflow:owner",
+      "workflowId": "rJKdfFjNijLIOWNi",
+      "projectId": "zpG68AhxBc3phERY",
+      "project": {
+        "updatedAt": "2026-11-13T20:01:33.891Z",
+        "createdAt": "2026-11-13T19:31:13.101Z",
+        "id": "zpG68AhxBc3phERY",
+        "name": "Frank Namegni <patrick.namegni@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "e8d534a7-a9e1-4122-92e4-3e6b2692bf2a"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version 1.2",
+    "description": ""
+  }
+}
