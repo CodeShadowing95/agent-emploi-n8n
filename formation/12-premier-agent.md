@@ -115,9 +115,9 @@ La dernière commande répond `Hi CodeShadowing95/agent-emploi-n8n! You've succe
 **À chaque fois : exporter, committer, pousser.**
 
 ```bash
-[VPS] $ sudo apt install -y jq          # une seule fois
+[VPS] $ sudo apt install -y jq                          # une seule fois
+[VPS] $ cp masques.local.example masques.local          # une seule fois, puis remplis-le
 [VPS] $ ./scripts/export-workflows.sh
-[VPS] $ sed -i 's/123456789/TON_CHAT_ID/g' workflows/*.json   # 123456789 = ton vrai chat_id
 [VPS] $ git diff
 [VPS] $ git checkout -b agent-00-bonjour
 [VPS] $ git add workflows/
@@ -143,8 +143,8 @@ Exécuter un workflow ne le modifie pas : il n'y a rien à exporter après une s
 | Commande | Ce qu'elle fait |
 |---|---|
 | `sudo apt install -y jq` | Installe `jq`, un petit outil qui lit et modifie du JSON. Le script en a besoin. Une seule fois par serveur. |
-| `./scripts/export-workflows.sh` | Prend la photo : copie tous tes workflows de n8n vers `workflows/` (détail plus bas). |
-| `sed -i 's/123456789/TON_CHAT_ID/g' workflows/*.json` | Remplace ton vrai chat_id par le repère `TON_CHAT_ID` dans les fichiers exportés. Le dépôt est public : tes valeurs personnelles n'y vont jamais. n8n, lui, garde ton vrai numéro. |
+| `./scripts/export-workflows.sh` | Prend la photo : copie **tous** tes workflows de n8n vers `workflows/`, puis remplace chaque valeur de `masques.local` par son repère (détail plus bas). Le dépôt est public : tes valeurs n'y vont jamais. n8n, lui, garde tes vraies valeurs. |
+| `cp masques.local.example masques.local` | Crée ton fichier de **masques**, une seule fois. Ouvre-le (`nano masques.local`) et mets une ligne par valeur personnelle : `ton_vrai_chat_id=TON_CHAT_ID`, puis plus tard l'ID de ta feuille et ton téléphone. Il n'est jamais commité (il est dans `.gitignore`). |
 | `git diff` | Montre ce qui a changé dans les fichiers. Vérifie qu'il ne reste aucune valeur à toi (chat_id, ID de feuille, téléphone, adresse mail). |
 | `git checkout -b agent-00-bonjour` | Crée une **branche**, une copie de travail à part, pour ne pas toucher `main` directement. Change le nom à chaque agent. |
 | `git add workflows/` | Met les fichiers de `workflows/` dans le prochain commit. |
@@ -162,6 +162,7 @@ Exécuter un workflow ne le modifie pas : il n'y a rien à exporter après une s
 | `docker compose exec -T n8n sh -c '… n8n export:workflow --all --separate --output=/tmp/export/'` | Entre dans le conteneur n8n et lui demande d'exporter **tous** ses workflows, un fichier par workflow, dans un dossier temporaire du conteneur. |
 | `docker compose cp n8n:/tmp/export/. /tmp/n8n-export/` | Copie ces fichiers du conteneur vers le serveur. |
 | La boucle `for f in … ; do … done` | Pour chaque fichier : fabrique un nom propre à partir du nom du workflow (minuscules, sans accents ni espaces : « Bonjour du matin » devient `bonjour-du-matin.json`), retire les données de test épinglées (`pinData`, qui peuvent contenir de vrais mails), puis l'enregistre dans `workflows/`. |
+| Le bloc `if [ -f masques.local ]` | Lit `masques.local` ligne par ligne et remplace, dans tous les fichiers exportés, chaque vraie valeur par son repère. Sans ce fichier, il t'avertit que tes valeurs restent en clair. |
 
 Les identifiants (clés d'API, jetons) ne sont **jamais** exportés : le fichier ne contient que leur nom et un numéro interne.
 
@@ -169,7 +170,7 @@ Les identifiants (clés d'API, jetons) ne sont **jamais** exportés : le fichier
 
 1. Construire et tester le workflow dans n8n, puis **Save**.
 2. `./scripts/export-workflows.sh`
-3. Remplacer tes valeurs personnelles par les repères (`TON_CHAT_ID`, `TON_ID_DE_FEUILLE`, `TON_TELEPHONE`) avec `sed`, puis `git diff`.
+3. `git diff` : vérifier qu'aucune valeur personnelle ne reste. Si une nouvelle apparaît (nouvel agent, nouvelle feuille), ajoute-la à `masques.local` et relance l'export.
 4. `git checkout -b agent-NN-nom`, `git add workflows/`, `git commit -m "feat: …"`, `git push -u origin agent-NN-nom`.
 5. Pull request sur GitHub, CI verte, fusion, puis `git checkout main && git pull` sur le serveur.
 
