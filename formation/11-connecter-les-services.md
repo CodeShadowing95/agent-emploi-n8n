@@ -159,11 +159,42 @@ On l'utilisera avec un nœud **HTTP Request**. C'est volontaire : tu apprends à
 
 ## 6. France Travail (offres agrégées)
 
-1. Crée un compte sur [francetravail.io](https://francetravail.io), espace **Développeur**.
-2. **Mes applications** → **Créer une application** → nom `agent-emploi`.
-3. Abonne l'application à l'API **Offres d'emploi**.
-4. Note le **Client ID** et le **Client Secret** affichés.
-5. *n8n* : **Create credential** → **OAuth2 API** :
+**Depuis 2026, l'API Offres d'emploi n'est plus en libre accès.** France Travail l'a retirée de la liste des API qu'on ajoute soi-même, après des usages massifs par des IA qui ne respectaient pas sa licence. L'accès se fait **sur demande**, et la réponse peut prendre du temps (source : [data.gouv.fr](https://www.data.gouv.fr/dataservices/api-offres-demploi)).
+
+En attendant, l'agent de veille (chapitre 17) tourne avec **LinkedIn seul** : dans `workflows/04-veille-offres.json`, le nœud **France Travail** est désactivé. Tu peux donc passer cette section et y revenir quand l'accès est accordé.
+
+### 6.1 Créer l'application
+
+1. Crée un compte sur [francetravail.io](https://francetravail.io), puis **Mon espace**.
+2. **Créer ma première application** : nom `agent-emploi`, une description courte (usage personnel), et l'adresse de ton dépôt GitHub comme URL. **Enregistrer** (une case « Je ne suis pas un robot » s'affiche).
+3. La page de l'application affiche l'**Identifiant client** et, **une seule fois**, la **Clé secrète** : range les deux dans ton gestionnaire de mots de passe tout de suite. En cas de perte, il faudra cliquer **Renouveler**.
+
+Sous **Ajouter une API**, tu verras une liste d'API (ROME, La Bonne Boite, Marché du travail…), mais pas **Offres d'emploi** : c'est normal.
+
+### 6.2 Demander l'accès à l'API Offres d'emploi
+
+1. Ouvre [francetravail.io/contact](https://francetravail.io/contact). Remplis ton identité, puis **Qu'est-ce qui vous amène ?** → **Autre demande**.
+2. Un encadré rouge liste ce que la demande doit préciser. Réponds à **chaque** point dans le message :
+
+| Point demandé | Exemple de réponse pour un usage personnel |
+|---|---|
+| Nom et statut juridique du porteur | Ton nom, particulier, demandeur d'emploi, pas de société |
+| Nom du service et URL | `agent-emploi`, outil privé auto-hébergé, lien du dépôt GitHub |
+| Finalité et bénéficiaires | Ta propre recherche d'emploi ; seul bénéficiaire : toi |
+| Affichage ou réutilisation des offres | Aucune publication ; les offres retenues vont dans ton suivi privé avec le lien francetravail.fr |
+| Modèle économique | Aucun, usage non commercial |
+| Volumétrie et fréquence | Une recherche par jour ouvré, 150 offres maximum |
+| Conservation et usage d'une IA | Offres retenues gardées le temps de ta recherche ; texte envoyé à l'API Claude pour la note, aucun entraînement de modèle |
+| Mentions légales, CGU, confidentialité | Outil privé sans site public ; tu peux en rédiger si besoin |
+
+3. Indique l'identifiant client de ton application, choisis **Par e-mail**, coche l'autorisation, **Envoyer**.
+
+Dis la vérité sur l'IA : c'est précisément ce que France Travail contrôle.
+
+### 6.3 Quand l'accès est accordé
+
+1. Sur la page de ton application, vérifie que **Offres d'emploi** apparaît sous **API autorisée**.
+2. *n8n* : **Create credential** → **OAuth2 API** :
 
 | Champ | Valeur |
 |---|---|
@@ -175,11 +206,14 @@ On l'utilisera avec un nœud **HTTP Request**. C'est volontaire : tu apprends à
 
 Nomme l'identifiant `France Travail`. n8n demandera et renouvellera le jeton tout seul.
 
-Si France Travail affiche d'autres valeurs (scope, adresse) dans la documentation de ton application, ce sont elles qui font foi.
+3. Dans l'agent de veille, ouvre le nœud **France Travail**, choisis cet identifiant, puis réactive le nœud (clic droit → **Activate**, ou touche **D**). **Publish**.
+
+Si France Travail t'indique d'autres valeurs (scope, adresse) dans sa réponse ou la documentation de ton application, ce sont elles qui font foi.
 
 ## Vérifie
 
-- [ ] Dans **Credentials**, six identifiants : Telegram, Anthropic, Gmail OAuth2, Google Sheets OAuth2, Apify (Header Auth), France Travail (OAuth2).
+- [ ] Dans **Credentials**, cinq identifiants : Telegram, Anthropic, Gmail OAuth2, Google Sheets OAuth2, Apify (Header Auth). Le sixième, France Travail (OAuth2), viendra quand l'accès sera accordé (section 6).
+- [ ] Ta demande d'accès à l'API Offres d'emploi est envoyée.
 - [ ] Telegram, Anthropic, Gmail et Sheets affichent un test de connexion réussi.
 - [ ] L'application Google est « In production ».
 - [ ] Ta feuille `Suivi candidatures` existe, avec les colonnes en ligne 1.
@@ -195,7 +229,8 @@ Si France Travail affiche d'autres valeurs (scope, adresse) dans la documentatio
 | Gmail fonctionnait, puis `invalid_grant` une semaine plus tard | Application restée en mode Testing | Publie l'application (3.6) et reconnecte l'identifiant |
 | Telegram : `Unauthorized` | Jeton mal copié | Recopie-le depuis BotFather (`/mybots` → ton bot → **API Token**) |
 | Anthropic : `credit balance is too low` | Pas de crédit | Ajoute du crédit dans la console |
-| France Travail : `invalid_scope` | L'application n'est pas abonnée à l'API Offres d'emploi | Vérifie l'abonnement dans ton espace francetravail.io |
+| France Travail : l'API Offres d'emploi n'est pas dans **Ajouter une API** | Elle est accessible sur demande depuis 2026 | Fais la demande (6.2) |
+| France Travail : `invalid_scope` | L'accès à l'API Offres d'emploi n'est pas (encore) accordé | Vérifie **API autorisée** sur la page de ton application |
 
 ## Exercice : refais-le seul
 
