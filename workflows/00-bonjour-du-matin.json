@@ -76,7 +76,7 @@
     },
     {
       "parameters": {
-        "chatId": "9140994581",
+        "chatId": "TON_CHAT_ID",
         "text": "={{ $json.text }}",
         "additionalFields": {
           "appendAttribution": false
