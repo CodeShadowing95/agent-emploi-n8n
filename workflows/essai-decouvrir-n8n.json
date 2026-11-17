@@ -1,0 +1,193 @@
+{
+  "updatedAt": "2026-11-15T21:46:38.377Z",
+  "createdAt": "2026-11-15T20:28:37.506Z",
+  "id": "CvXDYgGNcRPJYpoR",
+  "name": "Essai : découvrir n8n",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "return [\n  { json: { entreprise: \"SFEIR\", titre: \"Développeur Full-Stack\", score: 84 } },\n  { json: { entreprise: \"Viveris\", titre: \"Développeur Full-Stack\", score: 82 } },\n  { json: { entreprise: \"Inetum\", titre: \"Développeur Full-Stack\", score: 65 } },\n  { json: { entreprise: \"Capgemini\", titre: \"Développeur Full-Stack\", score: 90 } }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "f40e9e87-7aba-470f-b844-58156d0a61bf",
+      "name": "Code"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "86fe5f3a-0fae-4b2f-9858-ef41d468b9d7",
+      "name": "Manual Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "fce007d6-defa-4a1d-9526-084960ba3c52",
+              "leftValue": "={{ $json.score }}",
+              "rightValue": 75,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        448,
+        0
+      ],
+      "id": "013171a1-0641-476a-b840-ac66801e7e39",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6702e8e1-983f-4edc-aa31-cebfef3f9129",
+              "name": "texte",
+              "value": "={{ $json.titre }} chez {{ $json.entreprise }} : {{ $json.score }} / 100",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "8b090af1-9205-4ae7-9d19-7d4039eeedfa",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7572037a-abe2-41ce-adff-46745f91a138",
+              "name": "raison",
+              "value": "Note trop basse",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        672,
+        96
+      ],
+      "id": "7671a19e-69a1-41e7-ac24-0cb7873ac5c0",
+      "name": "Edit Fields1"
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "versionId": "53cd80de-bd76-43cd-89c2-11e3651dd826",
+  "activeVersionId": null,
+  "versionCounter": 70,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-15T20:28:37.506Z",
+      "createdAt": "2026-11-15T20:28:37.506Z",
+      "role": "workflow:owner",
+      "workflowId": "CvXDYgGNcRPJYpoR",
+      "projectId": "zpG68AhxBc3phERY",
+      "project": {
+        "updatedAt": "2026-11-13T20:01:33.891Z",
+        "createdAt": "2026-11-13T19:31:13.101Z",
+        "id": "zpG68AhxBc3phERY",
+        "name": "Frank Namegni <patrick.namegni@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "e8d534a7-a9e1-4122-92e4-3e6b2692bf2a"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}
