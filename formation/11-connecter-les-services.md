@@ -96,7 +96,7 @@ Menu ☰ → **APIs & Services** → **Library**. Cherche et clique **Enable** s
 2. **Audience** : **External**. **Next**.
 3. **Contact information** : ton adresse. **Next**.
 4. Accepte la politique, **Continue**, **Create**.
-5. Menu de gauche **Branding** → **Authorized domains** → **Add domain** → ton domaine racine (`patrick-namegni.fr`, ou `sslip.io` si tu utilises sslip). **Save**.
+5. Menu de gauche **Branding** → **Authorized domains** → **Add domain** → ton domaine racine (`patrick-namegni.fr`, ou `sslip.io` si tu utilises sslip). **Save**. N'écris **que** le domaine racine : avec l'adresse complète (`n8n.213-156-135-214.sslip.io`), Google affiche « Domaine non valide : saisissez un domaine privé de premier niveau ».
 6. Menu **Audience** → **Test users** → **Add users** → ton adresse Gmail de candidature → **Save**.
 
 ### 3.4 Créer le client OAuth
