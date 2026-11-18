@@ -62,7 +62,8 @@
         "chatId": "TON_CHAT_ID",
         "text": "={{ $json.texte }}",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "19973fa5-4f84-4165-97a4-6b25b0d8e467",

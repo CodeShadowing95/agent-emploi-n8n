@@ -90,7 +90,7 @@ En clair : on garde les candidatures envoyées dont la dernière action a au moi
 
 Condition : `{{ $json.etape }}` **String → is equal to** `abandon`.
 
-**Branche true** → **Google Sheets** `Update Row`, colonne de correspondance `entreprise`, `statut` = `sansreponse`, `majLe` = `{{ $now.toFormat('yyyy-MM-dd') }}` → **Telegram** : `Sans réponse : {{ $('À relancer ?').item.json.entreprise }}, classée après deux relances.`
+**Branche true** → **Google Sheets** `Update Row`, colonne de correspondance `entreprise`, `statut` = `sansreponse`, `majLe` = `{{ $now.toFormat('yyyy-MM-dd') }}` → **Telegram** : `Sans réponse : {{ $('À relancer ?').item.json.entreprise }}, classée après deux relances.` (dans ce nœud Telegram, **Additional Fields** → **Parse Mode** : `HTML`).
 
 ### Nœud 5 · Rédiger (Basic LLM Chain), sur la branche false
 

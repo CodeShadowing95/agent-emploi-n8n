@@ -70,6 +70,7 @@ Ajoute un nœud **Telegram** → **Send a text message** :
 - **Chat ID** : ton chat_id (chapitre 11)
 - **Text** : passe en mode **Expression** et écris `{{ $json.text }}`
 - **Additional Fields** → **Append n8n Attribution** : désactivé (sinon n8n ajoute une mention à chaque message)
+- **Additional Fields** → **Parse Mode** : `HTML` (sinon un `_` ou un `*` dans le texte, comme `demande_info`, fait échouer l'envoi). Ce mode permet aussi la mise en forme (`<b>gras</b>`, `<i>italique</i>`) : tu le verras au chapitre 14.
 
 ### 5. Tester
 
