@@ -220,20 +220,35 @@ Pourquoi `$('Préparer').item` et pas `$json` ? Parce que la sortie d'un nœud G
 Sortie `entretien` → **Telegram** → **Send a text message** :
 
 ```
-ENTRETIEN PROPOSÉ par {{ $('Préparer').item.json.entreprise }}
-{{ $('Préparer').item.json.resume }}
-Date proposée : {{ $('Préparer').item.json.date_proposee || 'non précisée' }}
-Prochaine étape : préparer l'entretien avec Claude.
+📅 <b>ENTRETIEN PROPOSÉ</b> · <b>{{ $('Préparer').item.json.entreprise }}</b>
+<blockquote>{{ $('Préparer').item.json.resume }}</blockquote>
+🕑 <b>Date proposée</b> : {{ $('Préparer').item.json.date_proposee || 'non précisée' }}
+👉 Prochaine étape : préparer l'entretien avec Claude.
 ```
 
 Sortie `autres` → **Telegram** :
 
 ```
-{{ $('Préparer').item.json.categorie }} · {{ $('Préparer').item.json.entreprise }}
-{{ $('Préparer').item.json.resume }}
+{{ {refus:'❌ Refus', demande_info:'❓ Demande d\'info', autre:'📩 Autre'}[$('Préparer').item.json.categorie] }} · <b>{{ $('Préparer').item.json.entreprise }}</b>
+<blockquote>{{ $('Préparer').item.json.resume }}</blockquote>
+<i>Réponds-lui depuis Gmail.</i>
 ```
 
+La première ligne choisit l'emoji et le libellé selon la catégorie : `{refus: …, demande_info: …}` est une petite table de correspondance, et `[…categorie]` va y chercher la bonne entrée.
+
 Dans les deux, ouvre **Additional Fields** : désactive **Append n8n Attribution** et mets **Parse Mode** sur `HTML`. Sans ce dernier réglage, le `_` de `demande_info` est lu comme le début d'un texte en italique et Telegram refuse le message (`can't parse entities`).
+
+Le mode HTML sert aussi à mettre le message en forme. Telegram comprend ces balises :
+
+| Balise | Rendu |
+|---|---|
+| `<b>texte</b>` | **gras** |
+| `<i>texte</i>` | *italique* |
+| `<code>texte</code>` | `police à chasse fixe` |
+| `<blockquote>texte</blockquote>` | citation, avec une barre à gauche |
+| `<a href="https://…">lien</a>` | lien cliquable |
+
+Les retours à la ligne et les emojis passent tels quels. Pas de couleurs ni de tableaux. Attention : un `<` ou un `&` seul dans le résumé ferait échouer l'envoi, mais c'est rare dans un texte écrit par Claude.
 
 ### Nœud 9 · Étiqueter le mail (Gmail)
 
