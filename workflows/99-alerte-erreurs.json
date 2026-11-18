@@ -17,7 +17,8 @@
         "chatId": "TON_CHAT_ID",
         "text": "=ÉCHEC : {{ $json.workflow.name }}\nNœud : {{ $json.execution.lastNodeExecuted }}\nErreur : {{ $json.execution.error.message }}\n{{ $json.execution.url }}",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "42902267-7ac0-41d8-ba84-7273d3c7220d",
