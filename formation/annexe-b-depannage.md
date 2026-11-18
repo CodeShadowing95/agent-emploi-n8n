@@ -107,6 +107,7 @@ Si tu tournes en rond plus de 30 minutes : fais une pause, puis relis le message
 | Google : `redirect_uri_mismatch` | L'URL de redirection ne correspond pas | Copie-la depuis n8n, colle-la à l'identique dans Google Cloud |
 | Google : ça marchait, puis `invalid_grant` après une semaine | Application en mode **Testing** : jetons valables 7 jours | Publie l'application (chapitre 11), puis reconnecte l'identifiant |
 | Telegram : `chat not found` | Mauvais `chat_id`, ou tu n'as jamais écrit au bot | Envoie `/start` à ton bot, relis le `chat_id` (chapitre 11) |
+| Telegram : `can't parse entities` | Un `_` ou un `*` dans le texte (par exemple `demande_info`) est lu comme du Markdown | **Additional Fields** → **Parse Mode** : `HTML` |
 | Anthropic : `credit balance is too low` | Plus de crédit | Recharge, et vérifie ta limite de dépense |
 | Anthropic : `overloaded_error` | Service saturé un instant | **Settings** du nœud → **Retry On Fail** |
 | Apify : `0 items` | Mots-clés trop précis, ou aucune offre ce jour-là | Teste l'actor sur la console Apify avec les mêmes paramètres |

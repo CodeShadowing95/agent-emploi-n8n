@@ -479,7 +479,8 @@
         "chatId": "TON_CHAT_ID",
         "text": "=ENTRETIEN PROPOSÉ par {{ $('Préparer').item.json.entreprise }}\n{{ $('Préparer').item.json.resume }}\nDate proposée : {{ $('Préparer').item.json.date_proposee || 'non précisée' }}\nProchaine étape : préparer l'entretien avec Claude.",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "3ea86fa5-346c-4d1f-87d0-014073e7a0f2",
@@ -496,7 +497,8 @@
         "chatId": "TON_CHAT_ID",
         "text": "={{ $('Préparer').item.json.categorie }} · {{ $('Préparer').item.json.entreprise }}\n{{ $('Préparer').item.json.resume }}",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "ed1f5409-30ff-4707-b4dd-601d4d0b7bc3",

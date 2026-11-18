@@ -233,7 +233,7 @@ Sortie `autres` → **Telegram** :
 {{ $('Préparer').item.json.resume }}
 ```
 
-Pense à désactiver **Append n8n Attribution** dans les deux.
+Dans les deux, ouvre **Additional Fields** : désactive **Append n8n Attribution** et mets **Parse Mode** sur `HTML`. Sans ce dernier réglage, le `_` de `demande_info` est lu comme le début d'un texte en italique et Telegram refuse le message (`can't parse entities`).
 
 ### Nœud 9 · Étiqueter le mail (Gmail)
 

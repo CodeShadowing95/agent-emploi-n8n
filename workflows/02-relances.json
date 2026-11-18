@@ -165,7 +165,8 @@
         "chatId": "TON_CHAT_ID",
         "text": "=Sans réponse : {{ $('À relancer ?').item.json.entreprise }}, classée après deux relances.",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "9e5f88d3-3245-4de9-80d0-9d6fa81b688f",

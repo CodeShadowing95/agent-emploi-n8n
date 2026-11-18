@@ -407,7 +407,8 @@
         "text": "={{ $json.texte }}",
         "additionalFields": {
           "appendAttribution": false,
-          "disable_web_page_preview": true
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
         }
       },
       "id": "8af4ab38-e60c-41bf-94d1-acaba974fcf5",
