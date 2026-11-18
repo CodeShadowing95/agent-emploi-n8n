@@ -96,12 +96,16 @@ for (const mail of mails) {
   const expediteur = (mail.json.from?.value?.[0]?.address || '').toLowerCase();
   const domaine = domaineDe(expediteur);
 
-  // 1. Même adresse que dans le suivi, sinon 2. même domaine d'entreprise
-  const ligne =
-    lignes.find(l => (l.email || '').toLowerCase() === expediteur) ||
-    (!messageries.includes(domaine) && lignes.find(l => domaineDe(l.email) === domaine));
-
   const viaAts = ats.some(nom => domaine.includes(nom));
+  const contenu = ((mail.json.subject || '') + ' ' + (mail.json.text || '')).toLowerCase();
+
+  // Mail d'un ATS (Indeed, Welcome to the Jungle…) : la même adresse écrit pour toutes
+  // les entreprises, donc on cherche le nom de l'entreprise dans l'objet et le texte.
+  // Sinon : 1. même adresse que dans le suivi, 2. même domaine d'entreprise.
+  const ligne = viaAts
+    ? lignes.find(l => (l.entreprise || '').length >= 3 && contenu.includes(l.entreprise.toLowerCase()))
+    : lignes.find(l => (l.email || '').toLowerCase() === expediteur) ||
+      (!messageries.includes(domaine) && lignes.find(l => domaineDe(l.email) === domaine));
 
   // Règle : on ignore tout ce qui n'est ni dans le suivi ni un ATS
   if (!ligne && !viaAts) continue;
@@ -123,7 +127,7 @@ for (const mail of mails) {
 return resultat;
 ```
 
-Ce que fait ce code, en clair : pour chaque mail, il cherche dans le suivi une ligne avec la même adresse, ou à défaut le même domaine (sauf pour Gmail, Outlook…, où le domaine ne dit rien de l'entreprise). Si rien ne correspond et que le mail ne vient pas d'un ATS, il l'ignore. Sinon, il prépare un item propre avec seulement ce dont la suite a besoin. Le texte est coupé à 6 000 caractères pour limiter le coût de l'appel à Claude.
+Ce que fait ce code, en clair : pour chaque mail, il cherche dans le suivi une ligne avec la même adresse, ou à défaut le même domaine (sauf pour Gmail, Outlook…, où le domaine ne dit rien de l'entreprise). Pour un mail d'ATS, l'adresse ne sert à rien : Indeed écrit depuis la même adresse pour toutes les entreprises, et sans cette précaution chaque mail Indeed serait rattaché à la première candidature Indeed du suivi. Le code cherche donc le nom de l'entreprise dans l'objet et le texte du mail. Si rien ne correspond et que le mail ne vient pas d'un ATS, il l'ignore. Sinon, il prépare un item propre avec seulement ce dont la suite a besoin. Le texte est coupé à 6 000 caractères pour limiter le coût de l'appel à Claude.
 
 Si aucun mail ne correspond, le nœud renvoie zéro item et le workflow s'arrête là : c'est voulu.
 
