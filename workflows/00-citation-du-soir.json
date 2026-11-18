@@ -79,8 +79,7 @@
         "chatId": "TON_CHAT_ID",
         "text": "={{ $json.text }}",
         "additionalFields": {
-          "appendAttribution": false,
-          "parse_mode": "HTML"
+          "appendAttribution": false
         }
       },
       "type": "n8n-nodes-base.telegram",
