@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-17T07:08:22.670Z",
+  "updatedAt": "2026-11-18T05:48:27.330Z",
   "createdAt": "2026-11-17T06:14:18.390Z",
   "id": "rJKdfFjNijLIOWNi",
   "name": "00 Bonjour du matin",
@@ -152,9 +152,9 @@
     "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "versionId": "139dc643-c7bd-4965-a307-fb0b4802a72e",
-  "activeVersionId": "139dc643-c7bd-4965-a307-fb0b4802a72e",
-  "versionCounter": 51,
+  "versionId": "fdd4234e-dbec-482c-bec7-0d80d6065cfc",
+  "activeVersionId": "fdd4234e-dbec-482c-bec7-0d80d6065cfc",
+  "versionCounter": 62,
   "triggerCount": 1,
   "sourceWorkflowId": null,
   "tags": [],
@@ -179,7 +179,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version 1.2",
+    "name": "Version fdd4234e",
     "description": ""
   }
 }

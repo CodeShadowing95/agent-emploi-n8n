@@ -4,7 +4,7 @@
   "id": "VW04QVvIk4I9giUJ",
   "name": "00 Citation du soir",
   "description": null,
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -138,15 +138,24 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "staticData": null,
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
   "versionId": "ecf0b30a-8563-4f43-8698-efc58934ef61",
-  "activeVersionId": null,
+  "activeVersionId": "ecf0b30a-8563-4f43-8698-efc58934ef61",
   "versionCounter": 34,
-  "triggerCount": 0,
+  "triggerCount": 1,
   "sourceWorkflowId": null,
   "tags": [],
   "shared": [
@@ -170,7 +179,7 @@
     }
   ],
   "versionMetadata": {
-    "name": null,
-    "description": null
+    "name": "Version 0.1",
+    "description": ""
   }
 }
