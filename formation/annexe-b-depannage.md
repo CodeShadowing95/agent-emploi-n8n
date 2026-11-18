@@ -112,6 +112,7 @@ Si tu tournes en rond plus de 30 minutes : fais une pause, puis relis le message
 | Apify : `0 items` | Mots-clés trop précis, ou aucune offre ce jour-là | Teste l'actor sur la console Apify avec les mêmes paramètres |
 | France Travail : `401` | Jeton refusé | Vérifie Client ID, Secret et scope `api_offresdemploiv2 o2dsoffre` |
 | Structured Output Parser : `Failed to parse` | Claude a répondu hors du format | Baisse la température à 0 ; rappelle le format dans le prompt ; active **Retry On Fail** |
+| Structured Output Parser : `The AI model returned an empty response` | Claude a renvoyé l'objet JSON sans la clé racine `output` qu'attend n8n (ou dans un bloc de code ```json) | Dans le message système : « Réponds uniquement avec du JSON de la forme {"output": {…}} » (déjà le cas dans `prompts/`) ; sinon active **Auto-Fix Format** |
 
 ## Repartir d'un état sain
 
