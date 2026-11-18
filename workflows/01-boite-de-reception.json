@@ -477,7 +477,7 @@
     {
       "parameters": {
         "chatId": "TON_CHAT_ID",
-        "text": "=ENTRETIEN PROPOSÉ par {{ $('Préparer').item.json.entreprise }}\n{{ $('Préparer').item.json.resume }}\nDate proposée : {{ $('Préparer').item.json.date_proposee || 'non précisée' }}\nProchaine étape : préparer l'entretien avec Claude.",
+        "text": "=📅 <b>ENTRETIEN PROPOSÉ</b> · <b>{{ $('Préparer').item.json.entreprise }}</b>\n<blockquote>{{ $('Préparer').item.json.resume }}</blockquote>\n🕑 <b>Date proposée</b> : {{ $('Préparer').item.json.date_proposee || 'non précisée' }}\n👉 Prochaine étape : préparer l'entretien avec Claude.",
         "additionalFields": {
           "appendAttribution": false,
           "parse_mode": "HTML"
@@ -495,7 +495,7 @@
     {
       "parameters": {
         "chatId": "TON_CHAT_ID",
-        "text": "={{ $('Préparer').item.json.categorie }} · {{ $('Préparer').item.json.entreprise }}\n{{ $('Préparer').item.json.resume }}",
+        "text": "={{ {refus:'❌ Refus', demande_info:'❓ Demande d\\'info', autre:'📩 Autre'}[$('Préparer').item.json.categorie] }} · <b>{{ $('Préparer').item.json.entreprise }}</b>\n<blockquote>{{ $('Préparer').item.json.resume }}</blockquote>\n<i>Réponds-lui depuis Gmail.</i>",
         "additionalFields": {
           "appendAttribution": false,
           "parse_mode": "HTML"
