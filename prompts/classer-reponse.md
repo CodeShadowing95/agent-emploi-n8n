@@ -29,7 +29,7 @@ Règles :
 - En cas de doute entre deux catégories, choisis la plus prudente pour Patrick : "entretien" plutôt
   que "autre" si un échange est proposé ; "autre" plutôt que "refus" si le refus n'est pas explicite.
 - N'invente aucune information absente du mail.
-- Réponds uniquement avec l'objet JSON.
+- Réponds uniquement avec du JSON de la forme {"output": { …les champs ci-dessus… }}, sans texte autour ni bloc de code.
 ```
 
 ## Message utilisateur
