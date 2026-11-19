@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T11:46:30.752Z",
+  "updatedAt": "2026-11-19T15:55:28.803Z",
   "createdAt": "2026-11-18T05:52:38.872Z",
   "id": "TQ32uNiyH8JMKD0G",
   "name": "01 Boîte de réception",
@@ -524,8 +524,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1712,
-        96
+        1728,
+        -160
       ],
       "id": "5c700341-d177-4b62-acd9-8dde17db3e4b",
       "name": "Append row in sheet",
@@ -635,7 +635,7 @@
     {
       "parameters": {
         "chatId": "TON_CHAT_ID",
-        "text": "={{ {refus:'❌ Refus', demande_info:'❓ Demande d\\'info', autre:'📩 Autre'}[$('Préparer').item.json.categorie] }} · <b>{{ $('Préparer').item.json.entreprise }}</b>\n<blockquote>{{ $('Préparer').item.json.resume }}</blockquote>\n<i>Réponds-lui depuis Gmail.</i>",
+        "text": "={{ {refus:'❌ Refus', demande_info:'❓ Demande d\\'info', accuse_reception:'📨 Accusé de réception', autre:'📩 Autre'}[$('Préparer').item.json.categorie] }} · <b>{{ $('Préparer').item.json.entreprise }}</b>\n<blockquote>{{ $('Préparer').item.json.resume }}</blockquote>\n<i>Réponds-lui depuis Gmail.</i>",
         "additionalFields": {
           "appendAttribution": false,
           "parse_mode": "HTML"
@@ -840,7 +840,7 @@
           },
           "conditions": [
             {
-              "id": "7bf228f8-8b9c-413a-a012-803004e235a5",
+              "id": "c25ed327-5224-497b-822c-faa7932f8ddf",
               "leftValue": "={{ $json.categorie }}",
               "rightValue": "autre",
               "operator": {
@@ -849,7 +849,7 @@
               }
             },
             {
-              "id": "7a3f7410-2c70-4e4c-b092-ba8e53023615",
+              "id": "226c993e-f56e-4919-8d0f-d890ccb35e47",
               "leftValue": "={{ $json.categorie }}",
               "rightValue": "accuse_reception",
               "operator": {
@@ -866,10 +866,10 @@
       "typeVersion": 2.4,
       "position": [
         1488,
-        96
+        144
       ],
-      "id": "5209550c-5be7-4c95-bb3f-a1d2c1fa74fa",
-      "name": "IF à ajouter"
+      "id": "b092e781-25fa-452f-9f6f-08ebaafeb4a0",
+      "name": "If"
     }
   ],
   "connections": {
@@ -1005,7 +1005,7 @@
         ],
         [
           {
-            "node": "IF à ajouter",
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -1030,7 +1030,7 @@
         ]
       ]
     },
-    "IF à ajouter": {
+    "If": {
       "main": [
         [
           {
@@ -1064,9 +1064,9 @@
     "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "versionId": "b2c0111b-3068-46b0-b19c-0bb9e96cba37",
-  "activeVersionId": "b2c0111b-3068-46b0-b19c-0bb9e96cba37",
-  "versionCounter": 166,
+  "versionId": "a46afa7d-1a8d-45a9-a933-3450c49f5c87",
+  "activeVersionId": "a46afa7d-1a8d-45a9-a933-3450c49f5c87",
+  "versionCounter": 171,
   "triggerCount": 1,
   "sourceWorkflowId": null,
   "tags": [],
@@ -1091,7 +1091,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version b2c0111b",
+    "name": "Version a46afa7d",
     "description": ""
   }
 }
