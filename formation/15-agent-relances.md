@@ -108,7 +108,7 @@ Notes : {{ $json.notes }}
 ```
 
 - **System Message** : celui de [`prompts/rediger-relance.md`](../prompts/rediger-relance.md).
-- **Require Specific Output Format** : activé, avec un **Structured Output Parser** :
+- **Require Specific Output Format** : activé, avec un **Structured Output Parser** → **Schema Type** : `Define using JSON Schema` (pas `Generate From JSON Example`, sinon n8n prend ce schéma pour un exemple et la réponse arrive sous `output.properties.objet`) :
 
 ```json
 {
