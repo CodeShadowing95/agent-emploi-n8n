@@ -64,11 +64,20 @@ Mode **Run Once for All Items** :
 ```javascript
 const aujourdhui = DateTime.now().setZone('Europe/Paris').startOf('day');
 
-// Nombre de jours écoulés depuis une date AAAA-MM-JJ (null si la date est vide)
+// Lit une date du suivi, qu'elle soit écrite 2026-11-11 (ISO) ou 11/11/2026 (format français)
+const lireDate = date => {
+  const texte = String(date || '').trim();
+  if (!texte) return null;
+  const options = { zone: 'Europe/Paris' };
+  let d = DateTime.fromISO(texte, options);
+  if (!d.isValid) d = DateTime.fromFormat(texte, 'dd/MM/yyyy', options);
+  return d.isValid ? d : null;
+};
+
+// Nombre de jours écoulés depuis une date (null si la date est vide ou illisible)
 const joursDepuis = date => {
-  if (!date) return null;
-  const d = DateTime.fromISO(String(date), { zone: 'Europe/Paris' });
-  return d.isValid ? Math.floor(aujourdhui.diff(d, 'days').days) : null;
+  const d = lireDate(date);
+  return d ? Math.floor(aujourdhui.diff(d, 'days').days) : null;
 };
 
 const aRelancer = [];
@@ -91,7 +100,7 @@ for (const { json: ligne } of $input.all()) {
 return aRelancer.slice(0, 10);
 ```
 
-En clair : on garde les candidatures envoyées dont la dernière action a au moins 7 jours, et on note à quelle étape elles en sont.
+En clair : on garde les candidatures envoyées dont la dernière action a au moins 7 jours, et on note à quelle étape elles en sont. Les dates du suivi peuvent être écrites `2026-11-11` ou `11/11/2026` (Google Sheets affiche souvent le format français) : `lireDate` comprend les deux. Une date illisible est ignorée, la ligne n'est alors pas relancée.
 
 ### Nœud 3 bis · Récap du jour (Code + Telegram)
 
