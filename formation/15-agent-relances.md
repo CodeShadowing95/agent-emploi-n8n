@@ -11,6 +11,7 @@
 | **Send and Wait for Response** | Une opération des nœuds Telegram et Gmail : envoyer un message, puis **mettre le workflow en pause** jusqu'à ta réponse. C'est l'humain dans la boucle. |
 | **Approval** (approbation) | Le type de réponse le plus simple : un bouton « Approuver » et, si tu veux, un bouton « Refuser ». |
 | **Exécution en attente** (*waiting*) | Une exécution en pause, qui reprendra quand tu répondras. Tu la vois dans **Executions** avec le statut *Waiting*. |
+| **Loop Over Items** | Un nœud qui fait passer les items **un par un** (ou par paquets) dans les nœuds suivants, puis revient chercher le suivant. Indispensable avant un Send and Wait, qui ne gère qu'un item par pause. |
 | **Luxon / `DateTime`** | La bibliothèque de dates disponible dans les nœuds Code et les expressions de n8n. `DateTime.now()` = maintenant. |
 | **Température** | Un réglage du modèle : à 0, ses réponses sont stables et prévisibles ; vers 1, plus variées. Pour classer : 0. Pour rédiger : environ 0,7. |
 
@@ -32,11 +33,17 @@
 ## Le schéma
 
 ```
-Schedule ─► Lire le suivi ─► À relancer ? (Code) ─► IF abandon ─┬► (true)  Passer en « sansreponse » ─► Telegram info
- 9 h                                                             │
-                                                                 └► (false) Rédiger (Claude) ─► Texte complet ? ─► Validation Telegram ─► IF approuvé ─┬► Envoyer (Gmail) ─► Noter la relance
-                                                                                                (en pause jusqu'au clic)            └► Noter « sansreponse »
+Schedule ─► Lire le suivi ─► À relancer ? (Code) ─┬► Préparer le récap ─► Telegram « Relances du jour »   (part en premier)
+ 9 h                                              │
+                                                  └► IF abandon ─┬► (true)  Passer en « sansreponse » ─► Telegram info
+                                                                 │
+                                                                 └► (false) Une par une (Loop Over Items) ◄──────────────────────────────┐
+                                                                              └► Rédiger ─► Texte complet ? ─► Validation ─► IF approuvé ─┤
+                                                                                                                (pause)     ├► Envoyer ─► Noter la relance ─┘
+                                                                                                                            └► Noter « sansreponse » ──────┘
 ```
+
+À 9 h, tu reçois d'abord la liste des entreprises du jour, puis la première relance avec ses boutons. Dès que tu réponds, la suivante arrive.
 
 ## Pas à pas, nœud par nœud
 
@@ -86,13 +93,51 @@ return aRelancer.slice(0, 10);
 
 En clair : on garde les candidatures envoyées dont la dernière action a au moins 7 jours, et on note à quelle étape elles en sont.
 
+### Nœud 3 bis · Récap du jour (Code + Telegram)
+
+Relie **À relancer ?** à deux nœuds : **IF abandon** (nœud 4) et un nouveau **Code** « Préparer le récap ». Place le récap **au-dessus** de IF abandon sur le canevas : n8n exécute les branches de haut en bas, donc le récap part avant les relances.
+
+**Préparer le récap**, mode **Run Once for All Items** :
+
+```javascript
+// Toutes les candidatures du jour, sorties par « À relancer ? »
+const lignes = $input.all().map(item => item.json);
+
+// Telegram est en mode HTML : on neutralise < > & dans les noms d'entreprise
+const html = texte => String(texte || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const libelle = { relance1: '1re relance', relance2: '2e relance', abandon: 'à classer sans réponse' };
+
+const liste = lignes
+  .map(l => `• <b>${html(l.entreprise)}</b> · ${libelle[l.etape] || l.etape}`)
+  .join('\n');
+
+return [{
+  json: {
+    texte: `📋 <b>Relances du jour</b> (${lignes.length})\n\n${liste}\n\nJe te les propose une par une juste après : réponds à chacune pour recevoir la suivante.`,
+  },
+}];
+```
+
+Puis **Telegram** « Récap du jour » : **Text** = `{{ $json.texte }}`, **Additional Fields** → **Parse Mode** : `HTML`, **Append n8n Attribution** désactivé.
+
+S'il n'y a rien à relancer, « À relancer ? » sort zéro item et aucun message ne part : pas de récap vide.
+
 ### Nœud 4 · IF abandon
 
 Condition : `{{ $json.etape }}` **String → is equal to** `abandon`.
 
 **Branche true** → **Google Sheets** `Update Row`, colonne de correspondance `entreprise` avec `entreprise` = `{{ $('À relancer ?').item.json.entreprise }}`, `statut` = `sansreponse`, `majLe` = `{{ $now.toFormat('yyyy-MM-dd') }}` → **Telegram** : `Sans réponse : {{ $('À relancer ?').item.json.entreprise }}, classée après deux relances.` (dans ce nœud Telegram, **Additional Fields** → **Parse Mode** : `HTML`).
 
-### Nœud 5 · Rédiger (Basic LLM Chain), sur la branche false
+### Nœud 4 bis · Une par une (Loop Over Items), sur la branche false
+
+Le nœud Validation (Send and Wait) met le workflow en pause et **ne traite qu'un seul item** par pause. Sans boucle, si 6 entreprises sont à relancer, seule la première t'est proposée et les 5 autres sont perdues jusqu'au lendemain.
+
+- Branche false de IF abandon → **Loop Over Items**, renommé « Une par une », **Batch Size** : `1`
+- Sortie **loop** → Rédiger
+- Sortie **done** → rien (la boucle est finie)
+- En fin de parcours, relie **Noter la relance**, **Noter « sansreponse »** et la branche false de **Texte complet ?** à l'entrée de « Une par une » : c'est ce retour qui fait passer à l'entreprise suivante.
+
+### Nœud 5 · Rédiger (Basic LLM Chain), dans la boucle
 
 - **Prompt (User Message)** :
 
@@ -149,7 +194,7 @@ Objet : {{ $json.output.objet }}
 
 - **Response Type** : `Approval`
 - **Approval Options** : **Type of Approval** = `Approve and Disapprove` ; **Approve Button Label** = `Envoyer` ; **Disapprove Button Label** = `Ne pas relancer`
-- **Limit Wait Time** : activé, `2` jours. Sans réponse dans ce délai, le workflow reprend comme un refus.
+- **Limit Wait Time** : activé, `2` jours. Sans réponse dans ce délai, le workflow reprend comme un refus. Avec la boucle, une relance sans réponse bloque les suivantes jusqu'à cette limite : réponds à chaque proposition dans la journée.
 - **Advanced Interactivity** → **Approve Within Chat** : activé, pour répondre d'un simple tap dans Telegram.
 
 Quand ce nœud s'exécute, le workflow se met en pause. Tu reçois le message avec deux boutons. Ton clic le réveille.
@@ -183,7 +228,7 @@ Dans les trois `Update Row`, la valeur de `entreprise` vise toujours le nœud **
 ## Tester
 
 1. Dans le suivi, ajoute une ligne `TEST` avec **ton adresse personnelle** en `email`, `statut` = `envoye`, `dateEnvoi` = une date d'il y a 8 jours.
-2. **Execute workflow**. Tu reçois la proposition sur Telegram.
+2. **Execute workflow**. Tu reçois le récap « Relances du jour », puis la proposition sur Telegram. Avec deux lignes de test, vérifie que la seconde arrive bien après ton clic sur la première.
 3. Clique sur **Envoyer** : le mail arrive dans ta boîte personnelle, `relance1` est rempli.
 4. Remets `relance1` à une date d'il y a 8 jours, relance : c'est la relance 2. Clique sur **Ne pas relancer** : statut `sansreponse`.
 5. Supprime la ligne `TEST`, puis **Publish**.

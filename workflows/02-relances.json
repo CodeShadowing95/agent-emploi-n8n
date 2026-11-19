@@ -197,7 +197,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        880,
+        1100,
         400
       ]
     },
@@ -232,7 +232,7 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        1000,
+        1220,
         600
       ]
     },
@@ -264,7 +264,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1240,
+        1460,
         400
       ],
       "webhookId": "59f57ea6-57db-4653-8a16-87155fc2febb"
@@ -300,7 +300,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1340,
+        1560,
         400
       ]
     },
@@ -319,7 +319,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        1560,
+        1780,
         300
       ]
     },
@@ -410,7 +410,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        1780,
+        2000,
         300
       ]
     },
@@ -490,7 +490,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        1560,
+        1780,
         500
       ]
     },
@@ -532,12 +532,60 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1000,
+        1220,
         400
       ],
       "id": "c4abfc7e-5c6e-4a1d-94fe-97db0dea8492",
       "name": "Texte complet ?",
       "notes": "Garde-fou : si Claude n'a pas rempli objet et corps, rien n'est proposé ni envoyé. La ligne n'est pas modifiée, la relance sera retentée au prochain passage.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Toutes les candidatures du jour, sorties par « À relancer ? »\nconst lignes = $input.all().map(item => item.json);\n\n// Telegram est en mode HTML : on neutralise < > & dans les noms d'entreprise\nconst html = texte => String(texte || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst libelle = { relance1: '1re relance', relance2: '2e relance', abandon: 'à classer sans réponse' };\n\nconst liste = lignes\n  .map(l => `• <b>${html(l.entreprise)}</b> · ${libelle[l.etape] || l.etape}`)\n  .join('\\n');\n\nreturn [{\n  json: {\n    texte: `📋 <b>Relances du jour</b> (${lignes.length})\\n\\n${liste}\\n\\nJe te les propose une par une juste après : réponds à chacune pour recevoir la suivante.`,\n  },\n}];\n"
+      },
+      "id": "c39b07c9-f0fa-443e-a8d6-49593b3ff9be",
+      "name": "Préparer le récap",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        60
+      ],
+      "notes": "Branche placée au-dessus de « Abandon ? » : avec l'ordre d'exécution v1, n8n l'exécute en premier, donc le récap arrive avant les relances.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "chatId": "TON_CHAT_ID",
+        "text": "={{ $json.texte }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "ee19d9ec-b595-4f49-9f9b-838f392b2fb3",
+      "name": "Récap du jour",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "f0a1f47e-6f30-44f4-89ad-c268e45d42ec",
+      "name": "Une par une",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        880,
+        400
+      ],
+      "notes": "Loop Over Items, Batch Size 1. Send and Wait ne traite qu'un item par pause : la boucle propose les relances l'une après l'autre.",
       "notesInFlow": true
     }
   ],
@@ -589,6 +637,11 @@
     "À relancer ?": {
       "main": [
         [
+          {
+            "node": "Préparer le récap",
+            "type": "main",
+            "index": 0
+          },
           {
             "node": "Abandon ?",
             "type": "main",
@@ -652,7 +705,7 @@
         ],
         [
           {
-            "node": "Rédiger",
+            "node": "Une par une",
             "type": "main",
             "index": 0
           }
@@ -686,7 +739,58 @@
             "index": 0
           }
         ],
-        []
+        [
+          {
+            "node": "Une par une",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparer le récap": {
+      "main": [
+        [
+          {
+            "node": "Récap du jour",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Une par une": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Rédiger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Noter la relance": {
+      "main": [
+        [
+          {
+            "node": "Une par une",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Noter le refus": {
+      "main": [
+        [
+          {
+            "node": "Une par une",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
