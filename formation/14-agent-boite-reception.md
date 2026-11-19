@@ -93,7 +93,7 @@ const ats = ['welcometothejungle', 'teamtailor', 'workday', 'smartrecruiters', '
 const alertes = /^(jobalerts?|alertes?|alerts?|newsletters?|notifications?|news|emploi|marketing|info)[-_.@+]/;
 const messageries = ['gmail.com', 'outlook.com', 'outlook.fr', 'hotmail.com', 'hotmail.fr', 'yahoo.fr', 'yahoo.com'];
 
-const domaineDe = adresse => (adresse || '').toLowerCase().split('@')[1] || '';
+const domaineDe = adresse => String(adresse || '').trim().toLowerCase().split('@')[1] || '';
 const simple = texte => (texte || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const resultat = [];
 
@@ -113,7 +113,7 @@ for (const mail of mails) {
   // 3. nom de domaine égal au nom de l'entreprise (claire@zyte.com → ligne « Zyte »).
   const ligne = viaAts
     ? lignes.find(l => (l.entreprise || '').length >= 3 && contenu.includes(l.entreprise.toLowerCase()))
-    : lignes.find(l => (l.email || '').toLowerCase() === expediteur) ||
+    : lignes.find(l => String(l.email || '').trim().toLowerCase() === expediteur) ||
       (!messageries.includes(domaine) && (
         lignes.find(l => domaineDe(l.email) === domaine) ||
         lignes.find(l => simple(l.entreprise).length >= 3 && simple(l.entreprise) === simple(domaine.split('.').slice(-2)[0]))
