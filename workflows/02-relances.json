@@ -264,7 +264,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1120,
+        1240,
         400
       ],
       "webhookId": "59f57ea6-57db-4653-8a16-87155fc2febb"
@@ -493,6 +493,52 @@
         1560,
         500
       ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "05e78e7a-f413-4767-9f26-e639e7430a58",
+              "leftValue": "={{ $json.output.objet }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "3bf11922-1b9a-4b1b-9d86-80f66b23959e",
+              "leftValue": "={{ $json.output.corps }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1000,
+        400
+      ],
+      "id": "c4abfc7e-5c6e-4a1d-94fe-97db0dea8492",
+      "name": "Texte complet ?",
+      "notes": "Garde-fou : si Claude n'a pas rempli objet et corps, rien n'est proposé ni envoyé. La ligne n'est pas modifiée, la relance sera retentée au prochain passage.",
+      "notesInFlow": true
     }
   ],
   "connections": {
@@ -566,7 +612,7 @@
       "main": [
         [
           {
-            "node": "Validation",
+            "node": "Texte complet ?",
             "type": "main",
             "index": 0
           }
@@ -629,6 +675,18 @@
             "index": 0
           }
         ]
+      ]
+    },
+    "Texte complet ?": {
+      "main": [
+        [
+          {
+            "node": "Validation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
       ]
     }
   },
