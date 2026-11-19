@@ -34,7 +34,7 @@
 ```
 Schedule ─► Lire le suivi ─► À relancer ? (Code) ─► IF abandon ─┬► (true)  Passer en « sansreponse » ─► Telegram info
  9 h                                                             │
-                                                                 └► (false) Rédiger (Claude) ─► Validation Telegram ─► IF approuvé ─┬► Envoyer (Gmail) ─► Noter la relance
+                                                                 └► (false) Rédiger (Claude) ─► Texte complet ? ─► Validation Telegram ─► IF approuvé ─┬► Envoyer (Gmail) ─► Noter la relance
                                                                                                 (en pause jusqu'au clic)            └► Noter « sansreponse »
 ```
 
@@ -122,6 +122,16 @@ Notes : {{ $json.notes }}
 ```
 
 - **Model** : **Anthropic Chat Model** → Claude **Sonnet**, **Sampling Temperature** `0.7`.
+
+### Garde-fou · Texte complet ? (IF), entre Rédiger et Validation
+
+Si le parser est mal réglé ou si Claude répond de travers, `objet` et `corps` arrivent vides. Sans garde-fou, le mail part vide chez l'entreprise : c'est arrivé pendant les tests. Ajoute un **IF** :
+
+- Condition 1 : `{{ $json.output.objet }}` **String → is not empty**
+- Condition 2 : `{{ $json.output.corps }}` **String → is not empty**, combinées avec **AND**
+- **true** → Validation ; **false** → rien. La ligne du suivi n'est pas modifiée, donc la relance sera retentée au prochain passage.
+
+Avant d'activer le workflow, exécute le nœud Rédiger seul et vérifie que la sortie montre bien `output.objet` et `output.corps`. Si tu vois d'autres clés (`state`, `cities`, `properties`…), le **Schema Type** du parser n'est pas sur `Define using JSON Schema`.
 
 ### Nœud 6 · Validation (Telegram, Send and Wait for Response)
 
