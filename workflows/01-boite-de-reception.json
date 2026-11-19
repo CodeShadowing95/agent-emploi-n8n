@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-18T19:31:22.910Z",
+  "updatedAt": "2026-11-19T11:46:30.752Z",
   "createdAt": "2026-11-18T05:52:38.872Z",
   "id": "TQ32uNiyH8JMKD0G",
   "name": "01 Boîte de réception",
@@ -302,8 +302,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1488,
-        -96
+        1728,
+        -352
       ],
       "id": "fec91263-5647-4461-92c8-16e6e328c8c6",
       "name": "Update row in sheet",
@@ -619,8 +619,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1968,
-        -96
+        2208,
+        -352
       ],
       "id": "012a2103-5b51-4665-9973-05ff145d050f",
       "name": "Send a text message",
@@ -644,8 +644,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1968,
-        96
+        2208,
+        -160
       ],
       "id": "095a3f7c-8716-432c-b570-687e98e0b73d",
       "name": "Send a text message1",
@@ -799,8 +799,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.5,
       "position": [
-        1744,
-        0
+        1984,
+        -256
       ],
       "id": "db34fe2a-cbaf-48bb-a2ec-5a505d150795",
       "name": "Switch catégorie"
@@ -816,8 +816,8 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        2208,
-        0
+        2560,
+        -16
       ],
       "id": "b7e9d187-34af-43ea-b84f-2f8b7e2f3850",
       "name": "Étiqueter le mail",
@@ -1055,9 +1055,9 @@
     "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "versionId": "45b7d56b-5506-4a00-bc20-28c32532af22",
-  "activeVersionId": "45b7d56b-5506-4a00-bc20-28c32532af22",
-  "versionCounter": 143,
+  "versionId": "b2c0111b-3068-46b0-b19c-0bb9e96cba37",
+  "activeVersionId": "b2c0111b-3068-46b0-b19c-0bb9e96cba37",
+  "versionCounter": 166,
   "triggerCount": 1,
   "sourceWorkflowId": null,
   "tags": [],
@@ -1082,7 +1082,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version 45b7d56b",
+    "name": "Version b2c0111b",
     "description": ""
   }
 }
