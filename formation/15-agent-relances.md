@@ -90,7 +90,7 @@ En clair : on garde les candidatures envoyées dont la dernière action a au moi
 
 Condition : `{{ $json.etape }}` **String → is equal to** `abandon`.
 
-**Branche true** → **Google Sheets** `Update Row`, colonne de correspondance `entreprise`, `statut` = `sansreponse`, `majLe` = `{{ $now.toFormat('yyyy-MM-dd') }}` → **Telegram** : `Sans réponse : {{ $('À relancer ?').item.json.entreprise }}, classée après deux relances.` (dans ce nœud Telegram, **Additional Fields** → **Parse Mode** : `HTML`).
+**Branche true** → **Google Sheets** `Update Row`, colonne de correspondance `entreprise` avec `entreprise` = `{{ $('À relancer ?').item.json.entreprise }}`, `statut` = `sansreponse`, `majLe` = `{{ $now.toFormat('yyyy-MM-dd') }}` → **Telegram** : `Sans réponse : {{ $('À relancer ?').item.json.entreprise }}, classée après deux relances.` (dans ce nœud Telegram, **Additional Fields** → **Parse Mode** : `HTML`).
 
 ### Nœud 5 · Rédiger (Basic LLM Chain), sur la branche false
 
@@ -161,11 +161,14 @@ Condition : `{{ $json.data.approved }}` **Boolean → is true**. Adapte le chemi
 
 Puis **Noter la relance (Google Sheets)** `Update Row`, correspondance `entreprise` :
 
+- `entreprise` = `{{ $('À relancer ?').item.json.entreprise }}`
 - `statut` = `relance`
 - la colonne de l'étape : si `etape` vaut `relance1`, remplis `relance1` avec `{{ $now.toFormat('yyyy-MM-dd') }}`. Le plus simple : deux champs, `relance1` = `{{ $('À relancer ?').item.json.etape === 'relance1' ? $now.toFormat('yyyy-MM-dd') : $('À relancer ?').item.json.relance1 }}` et `relance2` = `{{ $('À relancer ?').item.json.etape === 'relance2' ? $now.toFormat('yyyy-MM-dd') : $('À relancer ?').item.json.relance2 }}`
 - `majLe` = `{{ $now.toFormat('yyyy-MM-dd') }}`
 
-**Branche false → Noter « sansreponse »** : `Update Row`, `statut` = `sansreponse`, `notes` = `Relance refusée le {{ $now.toFormat('yyyy-MM-dd') }}`.
+**Branche false → Noter « sansreponse »** : `Update Row`, correspondance `entreprise` = `{{ $('À relancer ?').item.json.entreprise }}`, `statut` = `sansreponse`, `notes` = `Relance refusée le {{ $now.toFormat('yyyy-MM-dd') }}`.
+
+Dans les trois `Update Row`, la valeur de `entreprise` vise toujours le nœud **À relancer ?** et non `$json` : après Rédiger ou la validation Telegram, `$json` contient la sortie de Claude ou la réponse au bouton, plus la ligne du suivi.
 
 ## Tester
 
