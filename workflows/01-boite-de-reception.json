@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T15:55:28.803Z",
+  "updatedAt": "2026-11-19T16:29:00.439Z",
   "createdAt": "2026-11-18T05:52:38.872Z",
   "id": "TQ32uNiyH8JMKD0G",
   "name": "01 Boîte de réception",
@@ -1064,9 +1064,9 @@
     "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "versionId": "a46afa7d-1a8d-45a9-a933-3450c49f5c87",
-  "activeVersionId": "a46afa7d-1a8d-45a9-a933-3450c49f5c87",
-  "versionCounter": 171,
+  "versionId": "719bc651-7abe-47b9-a23d-008d719823fe",
+  "activeVersionId": "719bc651-7abe-47b9-a23d-008d719823fe",
+  "versionCounter": 172,
   "triggerCount": 1,
   "sourceWorkflowId": null,
   "tags": [],
@@ -1091,7 +1091,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version a46afa7d",
+    "name": "Version 719bc651",
     "description": ""
   }
 }
