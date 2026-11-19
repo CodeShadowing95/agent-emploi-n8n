@@ -524,8 +524,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1728,
-        -160
+        1712,
+        96
       ],
       "id": "5c700341-d177-4b62-acd9-8dde17db3e4b",
       "name": "Append row in sheet",
@@ -840,7 +840,7 @@
           },
           "conditions": [
             {
-              "id": "c25ed327-5224-497b-822c-faa7932f8ddf",
+              "id": "7bf228f8-8b9c-413a-a012-803004e235a5",
               "leftValue": "={{ $json.categorie }}",
               "rightValue": "autre",
               "operator": {
@@ -857,10 +857,10 @@
       "typeVersion": 2.4,
       "position": [
         1488,
-        144
+        96
       ],
-      "id": "b092e781-25fa-452f-9f6f-08ebaafeb4a0",
-      "name": "If"
+      "id": "5209550c-5be7-4c95-bb3f-a1d2c1fa74fa",
+      "name": "IF à ajouter"
     }
   ],
   "connections": {
@@ -996,7 +996,7 @@
         ],
         [
           {
-            "node": "If",
+            "node": "IF à ajouter",
             "type": "main",
             "index": 0
           }
@@ -1021,7 +1021,7 @@
         ]
       ]
     },
-    "If": {
+    "IF à ajouter": {
       "main": [
         [
           {

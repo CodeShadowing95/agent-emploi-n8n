@@ -35,7 +35,7 @@
 
 ```
 Gmail Trigger ─► Lire le suivi ─► Associer au suivi ─► Classer (Claude) ─► Préparer ─► IF ligne trouvée ─┬► Mettre à jour la ligne ─┐
- (5 min)        (Sheets,          (Code : règles)      + Structured          (Edit                       └► Ajouter une ligne ──────┤
+ (5 min)        (Sheets,          (Code : règles)      + Structured          (Edit                       └► IF à ajouter ─► Ajouter une ligne ┤ (sinon : Étiqueter)
                  Execute Once)                           Output Parser        Fields)                                              ▼
                                                                                                          Switch catégorie ─┬► Telegram PRIORITÉ (entretien)
                                                                                                                            └► Telegram normal
@@ -86,10 +86,15 @@ const mails = $('Gmail Trigger').all();
 // Domaines des outils de recrutement (ATS) qui écrivent à la place des entreprises
 const ats = ['welcometothejungle', 'teamtailor', 'workday', 'smartrecruiters', 'lever.co',
              'greenhouse', 'indeed', 'linkedin', 'hellowork', 'jobteaser', 'recruitee',
-             'flatchr', 'taleez', 'jobaffinity', 'beetween'];
+             'flatchr', 'taleez', 'jobaffinity', 'beetween', 'workable', 'ashbyhq',
+             'personio', 'jobgether', 'jobvite', 'icims', 'softgarden', 'join.com'];
+
+// Alertes, newsletters et notifications des job boards : jamais une réponse à une candidature
+const alertes = /^(jobalerts?|alertes?|alerts?|newsletters?|notifications?|news|emploi|marketing|info)[-_.@+]/;
 const messageries = ['gmail.com', 'outlook.com', 'outlook.fr', 'hotmail.com', 'hotmail.fr', 'yahoo.fr', 'yahoo.com'];
 
 const domaineDe = adresse => (adresse || '').toLowerCase().split('@')[1] || '';
+const simple = texte => (texte || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const resultat = [];
 
 for (const mail of mails) {
@@ -99,13 +104,20 @@ for (const mail of mails) {
   const viaAts = ats.some(nom => domaine.includes(nom));
   const contenu = ((mail.json.subject || '') + ' ' + (mail.json.text || '')).toLowerCase();
 
+  // Une alerte LinkedIn ou une newsletter HelloWork n'est pas une réponse : on passe
+  if (viaAts && alertes.test(expediteur)) continue;
+
   // Mail d'un ATS (Indeed, Welcome to the Jungle…) : la même adresse écrit pour toutes
   // les entreprises, donc on cherche le nom de l'entreprise dans l'objet et le texte.
-  // Sinon : 1. même adresse que dans le suivi, 2. même domaine d'entreprise.
+  // Sinon : 1. même adresse que dans le suivi, 2. même domaine d'entreprise,
+  // 3. nom de domaine égal au nom de l'entreprise (claire@zyte.com → ligne « Zyte »).
   const ligne = viaAts
     ? lignes.find(l => (l.entreprise || '').length >= 3 && contenu.includes(l.entreprise.toLowerCase()))
     : lignes.find(l => (l.email || '').toLowerCase() === expediteur) ||
-      (!messageries.includes(domaine) && lignes.find(l => domaineDe(l.email) === domaine));
+      (!messageries.includes(domaine) && (
+        lignes.find(l => domaineDe(l.email) === domaine) ||
+        lignes.find(l => simple(l.entreprise).length >= 3 && simple(l.entreprise) === simple(domaine.split('.').slice(-2)[0]))
+      ));
 
   // Règle : on ignore tout ce qui n'est ni dans le suivi ni un ATS
   if (!ligne && !viaAts) continue;
@@ -127,7 +139,7 @@ for (const mail of mails) {
 return resultat;
 ```
 
-Ce que fait ce code, en clair : pour chaque mail, il cherche dans le suivi une ligne avec la même adresse, ou à défaut le même domaine (sauf pour Gmail, Outlook…, où le domaine ne dit rien de l'entreprise). Pour un mail d'ATS, l'adresse ne sert à rien : Indeed écrit depuis la même adresse pour toutes les entreprises, et sans cette précaution chaque mail Indeed serait rattaché à la première candidature Indeed du suivi. Le code cherche donc le nom de l'entreprise dans l'objet et le texte du mail. Si rien ne correspond et que le mail ne vient pas d'un ATS, il l'ignore. Sinon, il prépare un item propre avec seulement ce dont la suite a besoin. Le texte est coupé à 6 000 caractères pour limiter le coût de l'appel à Claude.
+Ce que fait ce code, en clair : pour chaque mail, il cherche dans le suivi une ligne avec la même adresse, ou à défaut le même domaine (sauf pour Gmail, Outlook…, où le domaine ne dit rien de l'entreprise). Pour un mail d'ATS, l'adresse ne sert à rien : Indeed écrit depuis la même adresse pour toutes les entreprises, et sans cette précaution chaque mail Indeed serait rattaché à la première candidature Indeed du suivi. Le code cherche donc le nom de l'entreprise dans l'objet et le texte du mail. Les alertes et newsletters des job boards (`jobalerts-noreply@linkedin.com`, `alerte@emails.hellowork.com`…) sont écartées d'emblée : elles ne répondent à aucune candidature et ne doivent pas coûter un appel à Claude. Enfin, si une entreprise t'écrit depuis une adresse que le suivi ne connaît pas (`claire@zyte.com`), le code compare le nom de domaine au nom de l'entreprise. Si rien ne correspond et que le mail ne vient pas d'un ATS, il l'ignore. Sinon, il prépare un item propre avec seulement ce dont la suite a besoin. Le texte est coupé à 6 000 caractères pour limiter le coût de l'appel à Claude.
 
 Si aucun mail ne correspond, le nœud renvoie zéro item et le workflow s'arrête là : c'est voulu.
 
@@ -204,10 +216,14 @@ Condition : `{{ $json.ligneTrouvee }}` → **Boolean** → **is true**.
 
 Attention : `notes` est remplacé, pas complété. C'est un choix de simplicité ; l'historique complet reste dans Gmail.
 
-**Branche false → Ajouter une ligne (Google Sheets)**
+**Branche false → IF à ajouter**
 
-- **Operation** : `Append Row`
-- Valeurs : `entreprise`, `email` = `{{ $json.expediteur }}`, `canal` = `offre`, `statut` = `{{ $json.nouveauStatut }}`, `threadId`, `notes`, `majLe`, comme ci-dessus.
+Une ligne n'est créée que si le mail dit vraiment quelque chose sur une candidature. Condition : `{{ $json.categorie }}` **String → is not equal to** `autre`.
+
+- **true → Ajouter une ligne (Google Sheets)**
+  - **Operation** : `Append Row`
+  - Valeurs : `entreprise`, `email` = `{{ $json.expediteur }}`, `canal` = `offre`, `statut` = `{{ $json.nouveauStatut }}`, `threadId`, `notes`, `majLe`, comme ci-dessus.
+- **false** → relie directement au nœud **Étiqueter le mail** (nœud 9) : pas de ligne, pas de Telegram, le mail est juste marqué comme traité.
 
 ### Nœud 7 · Switch catégorie
 
