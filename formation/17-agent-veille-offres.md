@@ -178,7 +178,7 @@ Description :
 ```
 
 - **System Message** : celui de [`prompts/noter-offre.md`](../prompts/noter-offre.md)
-- **Require Specific Output Format** + **Structured Output Parser** :
+- **Require Specific Output Format** + **Structured Output Parser** → **Schema Type** : `Define using JSON Schema` :
 
 ```json
 {
