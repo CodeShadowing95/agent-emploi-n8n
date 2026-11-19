@@ -524,7 +524,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1488,
+        1712,
         96
       ],
       "id": "5c700341-d177-4b62-acd9-8dde17db3e4b",
@@ -659,7 +659,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Les lignes du suivi, lues par le nœud précédent\nconst lignes = $input.all().map(item => item.json);\n\n// Les mails reçus, repris depuis le déclencheur\nconst mails = $('Gmail Trigger').all();\n\n// Domaines des outils de recrutement (ATS) qui écrivent à la place des entreprises\nconst ats = ['welcometothejungle', 'teamtailor', 'workday', 'smartrecruiters', 'lever.co',\n             'greenhouse', 'indeed', 'linkedin', 'hellowork', 'jobteaser', 'recruitee',\n             'flatchr', 'taleez', 'jobaffinity', 'beetween'];\nconst messageries = ['gmail.com', 'outlook.com', 'outlook.fr', 'hotmail.com', 'hotmail.fr', 'yahoo.fr', 'yahoo.com'];\n\nconst domaineDe = adresse => (adresse || '').toLowerCase().split('@')[1] || '';\nconst resultat = [];\n\nfor (const mail of mails) {\n  const expediteur = (mail.json.from?.value?.[0]?.address || '').toLowerCase();\n  const domaine = domaineDe(expediteur);\n\n  const viaAts = ats.some(nom => domaine.includes(nom));\n  const contenu = ((mail.json.subject || '') + ' ' + (mail.json.text || '')).toLowerCase();\n\n  // Mail d'un ATS (Indeed, Welcome to the Jungle…) : la même adresse écrit pour toutes\n  // les entreprises, donc on cherche le nom de l'entreprise dans l'objet et le texte.\n  // Sinon : 1. même adresse que dans le suivi, 2. même domaine d'entreprise.\n  const ligne = viaAts\n    ? lignes.find(l => (l.entreprise || '').length >= 3 && contenu.includes(l.entreprise.toLowerCase()))\n    : lignes.find(l => (l.email || '').toLowerCase() === expediteur) ||\n      (!messageries.includes(domaine) && lignes.find(l => domaineDe(l.email) === domaine));\n\n  // Règle : on ignore tout ce qui n'est ni dans le suivi ni un ATS\n  if (!ligne && !viaAts) continue;\n\n  resultat.push({\n    json: {\n      messageId: mail.json.id,\n      threadId: mail.json.threadId,\n      expediteur,\n      objet: mail.json.subject || '',\n      texte: (mail.json.text || '').slice(0, 6000),\n      ligneTrouvee: Boolean(ligne),\n      entreprise: ligne ? ligne.entreprise : '',\n      statutActuel: ligne ? ligne.statut : '',\n    },\n  });\n}\n\nreturn resultat;"
+        "jsCode": "// Les lignes du suivi, lues par le nœud précédent\nconst lignes = $input.all().map(item => item.json);\n\n// Les mails reçus, repris depuis le déclencheur\nconst mails = $('Gmail Trigger').all();\n\n// Domaines des outils de recrutement (ATS) qui écrivent à la place des entreprises\nconst ats = ['welcometothejungle', 'teamtailor', 'workday', 'smartrecruiters', 'lever.co',\n             'greenhouse', 'indeed', 'linkedin', 'hellowork', 'jobteaser', 'recruitee',\n             'flatchr', 'taleez', 'jobaffinity', 'beetween', 'workable', 'ashbyhq',\n             'personio', 'jobgether', 'jobvite', 'icims', 'softgarden', 'join.com'];\n\n// Alertes, newsletters et notifications des job boards : jamais une réponse à une candidature\nconst alertes = /^(jobalerts?|alertes?|alerts?|newsletters?|notifications?|news|emploi|marketing|info)[-_.@+]/;\nconst messageries = ['gmail.com', 'outlook.com', 'outlook.fr', 'hotmail.com', 'hotmail.fr', 'yahoo.fr', 'yahoo.com'];\n\nconst domaineDe = adresse => (adresse || '').toLowerCase().split('@')[1] || '';\nconst simple = texte => (texte || '').toLowerCase().replace(/[^a-z0-9]/g, '');\nconst resultat = [];\n\nfor (const mail of mails) {\n  const expediteur = (mail.json.from?.value?.[0]?.address || '').toLowerCase();\n  const domaine = domaineDe(expediteur);\n\n  const viaAts = ats.some(nom => domaine.includes(nom));\n  const contenu = ((mail.json.subject || '') + ' ' + (mail.json.text || '')).toLowerCase();\n\n  // Une alerte LinkedIn ou une newsletter HelloWork n'est pas une réponse : on passe\n  if (viaAts && alertes.test(expediteur)) continue;\n\n  // Mail d'un ATS (Indeed, Welcome to the Jungle…) : la même adresse écrit pour toutes\n  // les entreprises, donc on cherche le nom de l'entreprise dans l'objet et le texte.\n  // Sinon : 1. même adresse que dans le suivi, 2. même domaine d'entreprise,\n  // 3. nom de domaine égal au nom de l'entreprise (claire@zyte.com → ligne « Zyte »).\n  const ligne = viaAts\n    ? lignes.find(l => (l.entreprise || '').length >= 3 && contenu.includes(l.entreprise.toLowerCase()))\n    : lignes.find(l => (l.email || '').toLowerCase() === expediteur) ||\n      (!messageries.includes(domaine) && (\n        lignes.find(l => domaineDe(l.email) === domaine) ||\n        lignes.find(l => simple(l.entreprise).length >= 3 && simple(l.entreprise) === simple(domaine.split('.').slice(-2)[0]))\n      ));\n\n  // Règle : on ignore tout ce qui n'est ni dans le suivi ni un ATS\n  if (!ligne && !viaAts) continue;\n\n  resultat.push({\n    json: {\n      messageId: mail.json.id,\n      threadId: mail.json.threadId,\n      expediteur,\n      objet: mail.json.subject || '',\n      texte: (mail.json.text || '').slice(0, 6000),\n      ligneTrouvee: Boolean(ligne),\n      entreprise: ligne ? ligne.entreprise : '',\n      statutActuel: ligne ? ligne.statut : '',\n    },\n  });\n}\n\nreturn resultat;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -828,6 +828,39 @@
           "name": "Gmail account"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "7bf228f8-8b9c-413a-a012-803004e235a5",
+              "leftValue": "={{ $json.categorie }}",
+              "rightValue": "autre",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1488,
+        96
+      ],
+      "id": "5209550c-5be7-4c95-bb3f-a1d2c1fa74fa",
+      "name": "IF à ajouter"
     }
   ],
   "connections": {
@@ -963,7 +996,7 @@
         ],
         [
           {
-            "node": "Append row in sheet",
+            "node": "IF à ajouter",
             "type": "main",
             "index": 0
           }
@@ -982,6 +1015,24 @@
         [
           {
             "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF à ajouter": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Étiqueter le mail",
             "type": "main",
             "index": 0
           }
