@@ -847,6 +847,15 @@
                 "type": "string",
                 "operation": "notEquals"
               }
+            },
+            {
+              "id": "7a3f7410-2c70-4e4c-b092-ba8e53023615",
+              "leftValue": "={{ $json.categorie }}",
+              "rightValue": "accuse_reception",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
             }
           ],
           "combinator": "and"

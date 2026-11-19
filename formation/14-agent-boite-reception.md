@@ -218,7 +218,7 @@ Attention : `notes` est remplacé, pas complété. C'est un choix de simplicité
 
 **Branche false → IF à ajouter**
 
-Une ligne n'est créée que si le mail dit vraiment quelque chose sur une candidature. Condition : `{{ $json.categorie }}` **String → is not equal to** `autre`.
+Une ligne n'est créée que si le mail dit vraiment quelque chose sur une candidature. Deux conditions combinées avec **AND** : `{{ $json.categorie }}` **String → is not equal to** `autre`, et `{{ $json.categorie }}` **is not equal to** `accuse_reception`. Un accusé de réception ne dit rien de neuf : s'il n'est relié à aucune ligne, il ne mérite pas d'en créer une.
 
 - **true → Ajouter une ligne (Google Sheets)**
   - **Operation** : `Append Row`
@@ -249,7 +249,7 @@ Sortie `entretien` → **Telegram** → **Send a text message** :
 Sortie `autres` → **Telegram** :
 
 ```
-{{ {refus:'❌ Refus', demande_info:'❓ Demande d\'info', autre:'📩 Autre'}[$('Préparer').item.json.categorie] }} · <b>{{ $('Préparer').item.json.entreprise }}</b>
+{{ {refus:'❌ Refus', demande_info:'❓ Demande d\'info', accuse_reception:'📨 Accusé de réception', autre:'📩 Autre'}[$('Préparer').item.json.categorie] }} · <b>{{ $('Préparer').item.json.entreprise }}</b>
 <blockquote>{{ $('Préparer').item.json.resume }}</blockquote>
 <i>Réponds-lui depuis Gmail.</i>
 ```
