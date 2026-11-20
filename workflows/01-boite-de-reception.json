@@ -573,7 +573,7 @@
             {
               "id": "3e40e6d4-6817-4ac1-a569-568b7bc977f4",
               "name": "ligneTrouvee",
-              "value": false,
+              "value": "={{ $('Associer au suivi').item.json.ligneTrouvee }}",
               "type": "boolean"
             },
             {

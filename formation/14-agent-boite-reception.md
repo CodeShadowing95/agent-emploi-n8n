@@ -200,6 +200,8 @@ Mode **Manual Mapping**, **Include Other Input Fields** : non. Crée ces champs 
 | `threadId` | String | `{{ $('Associer au suivi').item.json.threadId }}` |
 | `expediteur` | String | `{{ $('Associer au suivi').item.json.expediteur }}` |
 
+**Piège du champ Boolean.** Pour `ligneTrouvee`, n8n affiche par défaut une liste **true / false**. Si tu laisses `false`, toutes les réponses partent dans la branche « nouvelle ligne », même quand l'entreprise est dans le suivi. Passe le champ en **Expression** (survole-le et clique sur **Expression**, à côté de **Fixed**), puis colle l'expression du tableau. Vérification : après exécution, `ligneTrouvee` doit valoir `true` pour une entreprise connue.
+
 `||` est le « sinon » de JavaScript : `a || b` vaut `a` s'il est rempli, sinon `b`.
 
 Lis bien `nouveauStatut` : un refus ou un entretien changent le statut ; un accusé de réception ou une demande d'infos le laissent tel quel.
