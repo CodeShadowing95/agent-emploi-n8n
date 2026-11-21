@@ -129,7 +129,14 @@ C'est ce `dateEnvoi` qui déclenchera la relance du chapitre 15 sept jours plus 
 
 ### Branche false de l'IF · Remettre en « afaire »
 
-`Update Row`, `statut` = `afaire`, `notes` = `Envoi reporté le {{ $now.toFormat('yyyy-MM-dd') }}`.
+`Update Row`, correspondance `entreprise`, comme le nœud 9 : sans elle, n8n ne sait pas quelle ligne modifier.
+
+- `entreprise` = `{{ $('Limit').item.json.entreprise }}`
+- `statut` = `afaire`
+- `notes` = `Envoi reporté le {{ $now.toFormat('yyyy-MM-dd') }}`
+- `majLe` = `{{ $now.toFormat('yyyy-MM-dd') }}`
+
+Pourquoi `$('Limit').item` et pas `$json` ? La sortie de la validation Telegram contient ta réponse (`data.approved`), pas les champs de la ligne. On remonte donc au nœud `Limit`, qui porte encore la ligne.
 
 ## Tester
 
