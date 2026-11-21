@@ -1,5 +1,11 @@
 {
+  "updatedAt": "2026-11-21T08:21:42.436Z",
+  "createdAt": "2026-11-21T07:49:25.849Z",
+  "id": "0XwxdC4UcYuUDeJx",
   "name": "03 Envoi validé",
+  "description": null,
+  "active": true,
+  "isArchived": false,
   "nodes": [
     {
       "parameters": {
@@ -12,28 +18,31 @@
           ]
         }
       },
-      "id": "b6d6677c-f45e-46bf-a3d7-b589d9d806c0",
-      "name": "Mardi au jeudi à 8 h 30",
       "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
+      "typeVersion": 1.4,
       "position": [
         0,
-        300
-      ]
+        0
+      ],
+      "id": "39c803dc-469e-4e5f-b9b9-ad9bfa3135eb",
+      "name": "Schedule Trigger"
     },
     {
       "parameters": {
         "documentId": {
           "__rl": true,
-          "mode": "id",
-          "value": "TON_ID_DE_FEUILLE"
+          "value": "TON_ID_DE_FEUILLE",
+          "mode": "list",
+          "cachedResultName": "Suivi candidatures",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TON_ID_DE_FEUILLE/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "mode": "name",
-          "value": "candidatures"
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Liste candidatures",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TON_ID_DE_FEUILLE/edit#gid=0"
         },
-        "options": {},
         "filtersUI": {
           "values": [
             {
@@ -41,16 +50,23 @@
               "lookupValue": "pret"
             }
           ]
-        }
+        },
+        "options": {}
       },
-      "id": "a53c3bf4-da54-4297-a3a8-b29d977af005",
-      "name": "Lire les « pret »",
       "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.5,
+      "typeVersion": 4.7,
       "position": [
-        220,
-        300
-      ]
+        224,
+        0
+      ],
+      "id": "c9ebd1fd-1798-4df9-9753-69185e1e603c",
+      "name": "Lire les « pret »",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Vi2zlhyinOU7AEwP",
+          "name": "Google Sheets account"
+        }
+      }
     },
     {
       "parameters": {
@@ -58,110 +74,114 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "loose",
-            "version": 2
+            "typeValidation": "strict",
+            "version": 4
           },
           "conditions": [
             {
-              "id": "88a13f93-9359-40f2-b60c-7ac7fc4369f8",
+              "id": "6a2ecbce-9d30-45cb-9df2-bbe0bad52fd2",
               "leftValue": "={{ $json.email }}",
+              "rightValue": "",
               "operator": {
                 "type": "string",
                 "operation": "notEmpty",
                 "singleValue": true
-              },
-              "rightValue": ""
+              }
             },
             {
-              "id": "977e1e1e-ec50-4ad7-8ec5-9b23ead21c92",
+              "id": "792ea53a-84ee-482d-ae11-94b885ddfe14",
               "leftValue": "={{ $json.objet }}",
+              "rightValue": "",
               "operator": {
                 "type": "string",
                 "operation": "notEmpty",
                 "singleValue": true
-              },
-              "rightValue": ""
+              }
             },
             {
-              "id": "56924880-558c-4f2e-bf10-52a1b67e9adc",
+              "id": "35735f99-c865-4a84-8eb7-0541b3df354d",
               "leftValue": "={{ $json.corps }}",
+              "rightValue": "",
               "operator": {
                 "type": "string",
                 "operation": "notEmpty",
                 "singleValue": true
-              },
-              "rightValue": ""
+              }
             },
             {
-              "id": "c6caa661-b838-4847-81dd-f53f6a82e579",
+              "id": "e6d7566b-aebb-412f-8b8e-c0fae4168c14",
               "leftValue": "={{ $json.cv }}",
+              "rightValue": "",
               "operator": {
                 "type": "string",
                 "operation": "notEmpty",
                 "singleValue": true
-              },
-              "rightValue": ""
+              }
             }
           ],
           "combinator": "and"
         },
-        "looseTypeValidation": true,
         "options": {}
       },
-      "id": "12bf00fa-8c9f-4cb0-81e1-37d25e84fcc8",
-      "name": "Complètes ?",
       "type": "n8n-nodes-base.filter",
-      "typeVersion": 2.2,
+      "typeVersion": 2.4,
       "position": [
-        440,
-        300
-      ]
+        448,
+        0
+      ],
+      "id": "99e356ab-b71f-4856-aa0d-a48847f84d5d",
+      "name": "Complètes ?"
     },
     {
       "parameters": {
         "maxItems": 10
       },
-      "id": "9ed8f085-bb4c-48b6-b7be-edf7e834251a",
-      "name": "Limit",
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        660,
-        300
-      ]
+        672,
+        0
+      ],
+      "id": "67682928-fe4c-46ce-82bd-638c90bffc46",
+      "name": "Limit"
     },
     {
       "parameters": {
         "operation": "sendAndWait",
         "chatId": "TON_CHAT_ID",
-        "message": "=Candidature à envoyer : {{ $json.entreprise }}\nÀ : {{ $json.email }}\nPJ : {{ $json.cv }}\nObjet : {{ $json.objet }}\n\n{{ $json.corps }}",
+        "message": "=↗️ Candidature à envoyer : {{ $json.entreprise }}\nÀ : {{ $json.email }}\nPJ : {{ $json.cv }}\nObjet : {{ $json.objet }}\n\n{{ $json.corps }}",
         "approvalOptions": {
           "values": {
             "approvalType": "double",
-            "approveLabel": "Envoyer",
-            "disapproveLabel": "Pas maintenant"
+            "approveLabel": "✅ Envoyer",
+            "disapproveLabel": "❌ Pas maintenant"
           }
         },
+        "chatApproval": true,
         "options": {
           "limitWaitTime": {
             "values": {
-              "limitType": "afterTimeInterval",
-              "resumeAmount": 1,
               "resumeUnit": "days"
             }
           },
           "appendAttribution": false
         }
       },
-      "id": "18ea60db-68a5-41c2-867e-28b4d0dfff21",
-      "name": "Validation",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        880,
-        300
+        896,
+        0
       ],
-      "webhookId": "6f33b73d-c27b-4b6a-baaf-32bc93c16fac"
+      "id": "9f972a83-d734-471b-9a4b-ec26957c9710",
+      "name": "Validation",
+      "webhookId": "adc76ade-f826-4f82-a8c3-48d083c79134",
+      "credentials": {
+        "telegramApi": {
+          "id": "pD03Q2wPQdOvmPFP",
+          "name": "Telegram account"
+        }
+      }
     },
     {
       "parameters": {
@@ -169,34 +189,33 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "loose",
-            "version": 2
+            "typeValidation": "strict",
+            "version": 4
           },
           "conditions": [
             {
-              "id": "7b487344-1ca9-4c9e-b93d-23ba1c33aac8",
+              "id": "7f11e0a0-48e4-4e77-9877-01420d4d51ed",
               "leftValue": "={{ $json.data.approved }}",
+              "rightValue": "",
               "operator": {
                 "type": "boolean",
                 "operation": "true",
                 "singleValue": true
-              },
-              "rightValue": ""
+              }
             }
           ],
           "combinator": "and"
         },
-        "looseTypeValidation": true,
         "options": {}
       },
-      "id": "5abfcace-7e3d-4422-81fd-25f0f37ecf7e",
-      "name": "Approuvé ?",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
+      "typeVersion": 2.4,
       "position": [
-        1100,
-        300
-      ]
+        1120,
+        0
+      ],
+      "id": "279a9e93-5c75-470d-a7c3-712361ebbd90",
+      "name": "IF approuvé"
     },
     {
       "parameters": {
@@ -205,14 +224,14 @@
           "dataPropertyName": "data"
         }
       },
-      "id": "96263b83-565f-437b-854e-79b4aa090e82",
-      "name": "Lire le CV",
       "type": "n8n-nodes-base.readWriteFile",
-      "typeVersion": 1,
+      "typeVersion": 1.1,
       "position": [
-        1320,
-        200
-      ]
+        1344,
+        -96
+      ],
+      "id": "ab4de586-44eb-41a9-9985-ae5ee7bdab9a",
+      "name": "Lire le CV"
     },
     {
       "parameters": {
@@ -224,34 +243,43 @@
           "appendAttribution": false,
           "attachmentsUi": {
             "attachmentsBinary": [
-              {
-                "property": "data"
-              }
+              {}
             ]
           }
         }
       },
-      "id": "915f4e08-5632-4b8d-923b-5686288c8405",
-      "name": "Envoyer",
       "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.1,
+      "typeVersion": 2.2,
       "position": [
-        1540,
-        200
-      ]
+        1568,
+        -96
+      ],
+      "id": "19eb3813-bfc6-47f6-89e5-cc03b271c72c",
+      "name": "Envoyer",
+      "webhookId": "1616d247-7321-4fcc-bdce-c4f044fa0afc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Ome3Me3UowcBTf6C",
+          "name": "Gmail account"
+        }
+      }
     },
     {
       "parameters": {
         "operation": "update",
         "documentId": {
           "__rl": true,
-          "mode": "id",
-          "value": "TON_ID_DE_FEUILLE"
+          "value": "TON_ID_DE_FEUILLE",
+          "mode": "list",
+          "cachedResultName": "Suivi candidatures",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TON_ID_DE_FEUILLE/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "mode": "name",
-          "value": "candidatures"
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Liste candidatures",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TON_ID_DE_FEUILLE/edit#gid=0"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -277,14 +305,85 @@
               "removed": false
             },
             {
+              "id": "ville",
+              "displayName": "ville",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pays",
+              "displayName": "pays",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contact",
+              "displayName": "contact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "poste",
+              "displayName": "poste",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "canal",
+              "displayName": "canal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lien",
+              "displayName": "lien",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
               "id": "statut",
               "displayName": "statut",
               "required": false,
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "dateEnvoi",
@@ -293,8 +392,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "threadId",
@@ -303,8 +401,61 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "relance1",
+              "displayName": "relance1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "relance2",
+              "displayName": "relance2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cv",
+              "displayName": "cv",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "objet",
+              "displayName": "objet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "corps",
+              "displayName": "corps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
             },
             {
               "id": "majLe",
@@ -313,8 +464,18 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
               "canBeUsedToMatch": true,
-              "removed": false
+              "readOnly": true,
+              "removed": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -322,34 +483,44 @@
         },
         "options": {}
       },
-      "id": "908609f9-1e37-43ea-b5f2-7e61aa0a9b2b",
-      "name": "Passer en « envoye »",
       "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.5,
+      "typeVersion": 4.7,
       "position": [
-        1760,
-        200
-      ]
+        1776,
+        -96
+      ],
+      "id": "5be50c13-84ab-4a11-a770-6085963f1007",
+      "name": "Passer en « envoye »",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Vi2zlhyinOU7AEwP",
+          "name": "Google Sheets account"
+        }
+      }
     },
     {
       "parameters": {
         "operation": "update",
         "documentId": {
           "__rl": true,
-          "mode": "id",
-          "value": "TON_ID_DE_FEUILLE"
+          "value": "TON_ID_DE_FEUILLE",
+          "mode": "list",
+          "cachedResultName": "Suivi candidatures",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TON_ID_DE_FEUILLE/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "mode": "name",
-          "value": "candidatures"
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Liste candidatures",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TON_ID_DE_FEUILLE/edit#gid=0"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "entreprise": "={{ $('Limit').item.json.entreprise }}",
             "statut": "afaire",
             "notes": "=Envoi reporté le {{ $now.toFormat('yyyy-MM-dd') }}",
+            "entreprise": "={{ $('Limit').item.json.entreprise }}",
             "majLe": "={{ $now.toFormat('yyyy-MM-dd') }}"
           },
           "matchingColumns": [
@@ -367,14 +538,148 @@
               "removed": false
             },
             {
+              "id": "ville",
+              "displayName": "ville",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pays",
+              "displayName": "pays",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contact",
+              "displayName": "contact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "poste",
+              "displayName": "poste",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "canal",
+              "displayName": "canal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lien",
+              "displayName": "lien",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
               "id": "statut",
               "displayName": "statut",
               "required": false,
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dateEnvoi",
+              "displayName": "dateEnvoi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "threadId",
+              "displayName": "threadId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "relance1",
+              "displayName": "relance1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "relance2",
+              "displayName": "relance2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cv",
+              "displayName": "cv",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "objet",
+              "displayName": "objet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "corps",
+              "displayName": "corps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
             },
             {
               "id": "notes",
@@ -383,8 +688,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "majLe",
@@ -393,8 +697,18 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
               "canBeUsedToMatch": true,
-              "removed": false
+              "readOnly": true,
+              "removed": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -402,18 +716,24 @@
         },
         "options": {}
       },
-      "id": "3a52f400-bd34-4d5a-8caf-cf2f9964e237",
-      "name": "Remettre en « afaire »",
       "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.5,
+      "typeVersion": 4.7,
       "position": [
-        1320,
-        420
-      ]
+        1344,
+        96
+      ],
+      "id": "4ef9f1e8-c6c7-4036-a143-fe8239e1232d",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Vi2zlhyinOU7AEwP",
+          "name": "Google Sheets account"
+        }
+      }
     }
   ],
   "connections": {
-    "Mardi au jeudi à 8 h 30": {
+    "Schedule Trigger": {
       "main": [
         [
           {
@@ -461,7 +781,25 @@
       "main": [
         [
           {
-            "node": "Approuvé ?",
+            "node": "IF approuvé",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF approuvé": {
+      "main": [
+        [
+          {
+            "node": "Lire le CV",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row in sheet",
             "type": "main",
             "index": 0
           }
@@ -489,30 +827,54 @@
           }
         ]
       ]
-    },
-    "Approuvé ?": {
-      "main": [
-        [
-          {
-            "node": "Lire le CV",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Remettre en « afaire »",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
-    "timezone": "Europe/Paris"
+    "binaryMode": "separate"
   },
-  "pinData": {},
-  "active": false
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "versionId": "e48613fd-32cf-417f-9eac-7cac5c300629",
+  "activeVersionId": "e48613fd-32cf-417f-9eac-7cac5c300629",
+  "versionCounter": 88,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-21T07:49:25.849Z",
+      "createdAt": "2026-11-21T07:49:25.849Z",
+      "role": "workflow:owner",
+      "workflowId": "0XwxdC4UcYuUDeJx",
+      "projectId": "zpG68AhxBc3phERY",
+      "project": {
+        "updatedAt": "2026-11-13T20:01:33.891Z",
+        "createdAt": "2026-11-13T19:31:13.101Z",
+        "id": "zpG68AhxBc3phERY",
+        "name": "Frank Namegni <patrick.namegni@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "e8d534a7-a9e1-4122-92e4-3e6b2692bf2a"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version e48613fd",
+    "description": ""
+  }
 }
