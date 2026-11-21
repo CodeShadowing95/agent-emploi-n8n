@@ -1,5 +1,11 @@
 {
+  "updatedAt": "2026-11-21T23:09:38.006Z",
+  "createdAt": "2026-11-21T22:37:10.915Z",
+  "id": "gjpbXoo85X4v6BhW",
   "name": "05 Rapport du vendredi",
+  "description": null,
+  "active": true,
+  "isArchived": false,
   "nodes": [
     {
       "parameters": {
@@ -12,72 +18,88 @@
           ]
         }
       },
-      "id": "3437f651-c3e0-4034-ad3a-4f86e501fa48",
-      "name": "Vendredi à 17 h",
       "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
+      "typeVersion": 1.4,
       "position": [
         0,
-        300
-      ]
+        0
+      ],
+      "id": "df77a19e-2ac1-4b67-aafa-83696c4ad08c",
+      "name": "Schedule Trigger"
     },
     {
       "parameters": {
         "documentId": {
           "__rl": true,
-          "mode": "id",
-          "value": "TON_ID_DE_FEUILLE"
+          "value": "TON_ID_DE_FEUILLE",
+          "mode": "list",
+          "cachedResultName": "Suivi candidatures",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TON_ID_DE_FEUILLE/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "mode": "name",
-          "value": "candidatures"
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Liste candidatures",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TON_ID_DE_FEUILLE/edit#gid=0"
         },
         "options": {}
       },
-      "id": "9c964384-b7f2-46c9-8636-e1a88fe9c46b",
-      "name": "Lire le suivi",
       "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.5,
+      "typeVersion": 4.7,
       "position": [
-        220,
-        300
-      ]
+        224,
+        0
+      ],
+      "id": "f4a33f43-3835-4965-bcc7-335590abadaa",
+      "name": "Lire le suivi",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Vi2zlhyinOU7AEwP",
+          "name": "Google Sheets account"
+        }
+      }
     },
     {
       "parameters": {
-        "jsCode": "const lignes = $input.all().map(i => i.json);\nconst lundi = DateTime.now().setZone('Europe/Paris').startOf('week').toFormat('yyyy-MM-dd');\nconst cetteSemaine = date => Boolean(date) && String(date) >= lundi;\n\nconst repondu = ['entretien', 'refus'];\nconst compter = filtre => lignes.filter(filtre).length;\n\nconst semaine = {\n  envois: compter(l => cetteSemaine(l.dateEnvoi)),\n  relances: compter(l => cetteSemaine(l.relance1) || cetteSemaine(l.relance2)),\n  entretiens: compter(l => l.statut === 'entretien' && cetteSemaine(l.majLe)),\n  refus: compter(l => l.statut === 'refus' && cetteSemaine(l.majLe)),\n  nouvellesOffres: compter(l => l.canal === 'offre' && l.statut === 'afaire' && cetteSemaine(l.majLe)),\n};\n\n// Taux de réponse depuis le début, par canal\nconst canaux = ['spontanee', 'offre', 'cabinet'];\nconst parCanal = canaux.map(canal => {\n  const envoyees = lignes.filter(l => l.canal === canal && l.dateEnvoi);\n  const reponses = envoyees.filter(l => repondu.includes(l.statut));\n  const taux = envoyees.length ? Math.round((reponses.length / envoyees.length) * 100) : 0;\n  return `${canal} : ${reponses.length}/${envoyees.length} (${taux} %)`;\n});\n\nconst enCours = compter(l => ['envoye', 'relance'].includes(l.statut));\n\nconst texte = [\n  `Semaine du ${DateTime.fromISO(lundi).setLocale('fr').toFormat('d LLLL')}`,\n  `Envois : ${semaine.envois} · Relances : ${semaine.relances}`,\n  `Entretiens : ${semaine.entretiens} · Refus : ${semaine.refus}`,\n  `Nouvelles offres retenues : ${semaine.nouvellesOffres}`,\n  `En attente de réponse : ${enCours}`,\n  '',\n  'Taux de réponse par canal (depuis le début) :',\n  ...parCanal,\n].join('\\n');\n\nreturn [{ json: { texte } }];\n"
+        "jsCode": "const lignes = $input.all().map(i => i.json);\nconst lundi = DateTime.now().setZone('Europe/Paris').startOf('week').toFormat('yyyy-MM-dd');\nconst cetteSemaine = date => Boolean(date) && String(date) >= lundi;\n\nconst repondu = ['entretien', 'refus'];\nconst compter = filtre => lignes.filter(filtre).length;\nconst entreprisesEntretien = lignes.filter(l => l.statut === 'entretien' && cetteSemaine(l.majLe)).map(item => item.entreprise);\n\nconst semaine = {\n  envois: compter(l => cetteSemaine(l.dateEnvoi)),\n  relances: compter(l => cetteSemaine(l.relance1) || cetteSemaine(l.relance2)),\n  entretiens: compter(l => l.statut === 'entretien' && cetteSemaine(l.majLe)),\n  refus: compter(l => l.statut === 'refus' && cetteSemaine(l.majLe)),\n  nouvellesOffres: compter(l => l.canal === 'offre' && l.statut === 'afaire' && cetteSemaine(l.majLe)),\n  entreprisesEntretiens : entreprisesEntretien.length > 0 ? entreprisesEntretien.join(', ') : \"Aucune\",\n};\n\n// Taux de réponse depuis le début, par canal\nconst canaux = ['spontanee', 'offre', 'cabinet'];\nconst parCanal = canaux.map(canal => {\n  const envoyees = lignes.filter(l => l.canal === canal && l.dateEnvoi);\n  const reponses = envoyees.filter(l => repondu.includes(l.statut));\n  const taux = envoyees.length ? Math.round((reponses.length / envoyees.length) * 100) : 0;\n  return `${canal} : ${reponses.length}/${envoyees.length} (${taux} %)`;\n});\n\nconst enCours = compter(l => ['envoye', 'relance'].includes(l.statut));\n\nconst texte = [\n  `Semaine du ${DateTime.fromISO(lundi).setLocale('fr').toFormat('d LLLL')}`,\n  `Envois : ${semaine.envois} · Relances : ${semaine.relances}`,\n  `Entretiens : ${semaine.entretiens} · Refus : ${semaine.refus}`,\n  `Nouvelles offres retenues : ${semaine.nouvellesOffres}`,\n  `En attente de réponse : ${enCours}`,\n  '',\n  'Taux de réponse par canal (depuis le début) :',\n  ...parCanal,\n  `Liste des entreprises passées en entretien : ${semaine.entreprisesEntretiens}`,\n].join('\\n');\n\nreturn [{ json: { texte } }];"
       },
-      "id": "01587b42-2731-4bd2-9103-3999d143aaf3",
-      "name": "Calculer",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        440,
-        300
-      ]
+        448,
+        0
+      ],
+      "id": "a4054004-6d3c-40f9-b5fd-87f31192df15",
+      "name": "Calculer"
     },
     {
       "parameters": {
         "chatId": "TON_CHAT_ID",
         "text": "={{ $json.texte }}",
         "additionalFields": {
-          "appendAttribution": false,
-          "parse_mode": "HTML"
+          "appendAttribution": false
         }
       },
-      "id": "19973fa5-4f84-4165-97a4-6b25b0d8e467",
-      "name": "Telegram",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        660,
-        300
-      ]
+        672,
+        0
+      ],
+      "id": "4031ed69-fab6-4e29-a598-b5f8f9826583",
+      "name": "Send a text message",
+      "webhookId": "bbacbb2a-5038-4032-a724-ec67ef8c895d",
+      "credentials": {
+        "telegramApi": {
+          "id": "pD03Q2wPQdOvmPFP",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "connections": {
-    "Vendredi à 17 h": {
+    "Schedule Trigger": {
       "main": [
         [
           {
@@ -103,7 +125,7 @@
       "main": [
         [
           {
-            "node": "Telegram",
+            "node": "Send a text message",
             "type": "main",
             "index": 0
           }
@@ -113,8 +135,50 @@
   },
   "settings": {
     "executionOrder": "v1",
-    "timezone": "Europe/Paris"
+    "binaryMode": "separate"
   },
-  "pinData": {},
-  "active": false
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "versionId": "7b448b19-bd8d-43a7-9fb9-8b65b3b3c1f2",
+  "activeVersionId": "7b448b19-bd8d-43a7-9fb9-8b65b3b3c1f2",
+  "versionCounter": 95,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-21T22:37:10.915Z",
+      "createdAt": "2026-11-21T22:37:10.915Z",
+      "role": "workflow:owner",
+      "workflowId": "gjpbXoo85X4v6BhW",
+      "projectId": "zpG68AhxBc3phERY",
+      "project": {
+        "updatedAt": "2026-11-13T20:01:33.891Z",
+        "createdAt": "2026-11-13T19:31:13.101Z",
+        "id": "zpG68AhxBc3phERY",
+        "name": "Frank Namegni <patrick.namegni@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "e8d534a7-a9e1-4122-92e4-3e6b2692bf2a"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version 7b448b19",
+    "description": ""
+  }
 }
