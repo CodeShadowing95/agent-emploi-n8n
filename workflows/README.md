@@ -7,7 +7,7 @@ Ce dossier contient les six workflows de la formation, déjà construits nœud p
 | `01-boite-de-reception.json` | Classe les réponses des recruteurs et met à jour le suivi | Toutes les 5 minutes | 14 |
 | `02-relances.json` | Propose les relances J+7 et J+14, envoie après ton accord | Jours ouvrés, 9 h | 15 |
 | `03-envoi-valide.json` | Envoie les candidatures « pret » avec le CV, après ton accord | Mardi au jeudi, 8 h 30 | 16 |
-| `04-veille-offres.json` | Cherche les offres LinkedIn (et France Travail quand l'accès est accordé), les note, garde les ≥ 70 | Jours ouvrés, 7 h | 17 |
+| `04-veille-offres.json` | Lit les alertes mail des job boards et les offres LinkedIn (Apify), les note, garde les ≥ 70 | Alertes : toutes les 15 min ; LinkedIn : jours ouvrés, 7 h | 17 |
 | `05-rapport-du-vendredi.json` | Bilan chiffré de la semaine | Vendredi, 17 h | 18 |
 | `99-alerte-erreurs.json` | Te prévient sur Telegram si un agent échoue | Quand un agent échoue | 19 |
 
@@ -15,9 +15,9 @@ Ce dossier contient les six workflows de la formation, déjà construits nœud p
 
 ## Avant d'importer
 
-1. Avoir fait le **chapitre 11** : identifiants Telegram, Anthropic, Google (Sheets et Gmail), Apify (Header Auth) créés dans n8n. France Travail (OAuth2) seulement quand l'accès à l'API t'a été accordé (chapitre 11, section 6).
+1. Avoir fait le **chapitre 11** : identifiants Telegram, Anthropic, Google (Sheets et Gmail), Apify (Header Auth) créés dans n8n.
 2. Avoir la feuille **Suivi candidatures**, avec un onglet nommé exactement `candidatures` et les colonnes de [`sheets/tracker-modele.csv`](../sheets/tracker-modele.csv).
-3. Avoir créé dans Gmail l'étiquette `agent-traite`.
+3. Avoir créé dans Gmail l'étiquette `agent-traite`, et pour le 04 le libellé `alertes-emploi` avec ses filtres (chapitre 17, Préparation).
 
 ## Étape 1 · Remplacer trois repères dans les fichiers
 
@@ -46,11 +46,10 @@ Les nœuds qui ont besoin d'un identifiant affichent un **triangle rouge**. Ouvr
 | Nœuds | Identifiant |
 |---|---|
 | Google Sheets (Lire le suivi, Mettre à jour…, Ajouter…) | Google Sheets |
-| Gmail Trigger, Envoyer, Étiqueter le mail | Gmail |
+| Gmail Trigger, Alertes job boards, Envoyer, Étiqueter le mail | Gmail |
 | Telegram, Validation | Telegram |
 | Claude (…) | Anthropic |
 | Apify LinkedIn | Header Auth `Apify` |
-| France Travail (désactivé, voir plus bas) | OAuth2 `France Travail` |
 
 Deux réglages restent à choisir à la main :
 
@@ -70,11 +69,8 @@ Ordre conseillé : 99, puis 05 (le plus simple), 01, 04, 02, 03.
 
 ## Écarts avec les chapitres
 
-Les fichiers suivent les chapitres, avec quatre petites différences :
+Les fichiers suivent les chapitres, avec une petite différence :
 
-- **04 · France Travail désactivé** : l'API Offres d'emploi est accessible sur demande depuis 2026 (chapitre 11, section 6). Le nœud est livré désactivé, et l'agent tourne avec LinkedIn seul. Quand l'accès est accordé : ouvre le nœud, choisis l'identifiant `France Travail`, réactive-le (touche **D**), puis **Publish**.
-- **04 · France Travail** : pas de nœud Split Out. Le nœud **Normaliser France Travail** déplie lui-même la liste `resultats`, ce qui évite une erreur les jours sans offre.
-- **04 · Normaliser** : les deux nœuds ont **Always Output Data** activé, pour que le Merge continue même si une source ne renvoie rien.
 - **Telegram** : les boutons s'ouvrent dans ton navigateur (réglage par défaut). L'option **Approve Within Chat** du chapitre 15 reste désactivée : tu peux l'activer dans le nœud **Validation** si tu préfères répondre sans quitter Telegram.
 
 ## Après une modification
