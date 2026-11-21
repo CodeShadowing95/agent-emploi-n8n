@@ -51,7 +51,7 @@ Ne tape jamais le `$`, le `#` ni le `[PC]` : ils indiquent seulement où tu es.
 | **5. Les agents emploi** | [14 · Agent Boîte de réception](formation/14-agent-boite-reception.md) | Classer les réponses des recruteurs | 2 h |
 | | [15 · Agent Relances](formation/15-agent-relances.md) | Relancer à J+7 et J+14 avec ta validation | 2 h |
 | | [16 · Agent Envoi validé](formation/16-agent-envoi-valide.md) | Envoyer une candidature avec le CV en pièce jointe | 1 h 30 |
-| | [17 · Agent Veille offres](formation/17-agent-veille-offres.md) | Recevoir chaque matin les meilleures offres notées | 2 h |
+| | [17 · Agent Veille offres](formation/17-agent-veille-offres.md) | Recevoir vite les meilleures offres de tous tes job boards, notées | 2 h 30 |
 | | [18 · Agent Rapport du vendredi](formation/18-agent-rapport.md) | Mesurer ce qui marche | 45 min |
 | **6. Durer et montrer** | [19 · Exploiter le serveur](formation/19-exploitation.md) | Sauvegarder, restaurer, mettre à jour, être alerté | 1 h 30 |
 | | [20 · Sécurité des agents IA](formation/20-securite-agents.md) | Se protéger de l'injection de prompt | 45 min |

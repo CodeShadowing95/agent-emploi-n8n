@@ -34,7 +34,7 @@ Seul Caddy publie des ports. n8n et Postgres restent dans le réseau privé de D
 | 1 | Boîte de réception : classe les réponses et met à jour le suivi | Nouveau mail | À venir |
 | 2 | Relances à J+7 et J+14, validées sur Telegram | Chaque jour ouvré | À venir |
 | 3 | Envoi validé des candidatures, avec le CV en pièce jointe | Mardi au jeudi | À venir |
-| 4 | Veille d'offres (LinkedIn via Apify, France Travail), notées sur 100 | Chaque matin | À venir |
+| 4 | Veille d'offres (alertes mail des job boards, LinkedIn via Apify), notées sur 100 | Chaque matin | À venir |
 | 5 | Rapport hebdomadaire | Vendredi | À venir |
 
 ## Installation

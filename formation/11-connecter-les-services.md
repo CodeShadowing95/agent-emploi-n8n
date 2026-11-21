@@ -161,7 +161,7 @@ On l'utilisera avec un nœud **HTTP Request**. C'est volontaire : tu apprends à
 
 **Depuis 2026, l'API Offres d'emploi n'est plus en libre accès.** France Travail l'a retirée de la liste des API qu'on ajoute soi-même, après des usages massifs par des IA qui ne respectaient pas sa licence. L'accès se fait **sur demande**, et la réponse peut prendre du temps (source : [data.gouv.fr](https://www.data.gouv.fr/dataservices/api-offres-demploi)).
 
-En attendant, l'agent de veille (chapitre 17) tourne avec **LinkedIn seul** : dans `workflows/04-veille-offres.json`, le nœud **France Travail** est désactivé. Tu peux donc passer cette section et y revenir quand l'accès est accordé.
+**Cette section est facultative.** L'agent de veille (chapitre 17) n'utilise pas l'API : il lit les **alertes mail** de France Travail et des autres job boards, plus LinkedIn via Apify. Si ta demande est refusée, rien ne manque à la formation. Si elle est acceptée, l'API reste utile pour un exercice : ajouter une troisième branche au chapitre 17.
 
 ### 6.1 Créer l'application
 
